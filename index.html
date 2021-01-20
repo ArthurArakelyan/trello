@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trello</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://kit.fontawesome.com/b0458ec901.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <!-- header -->
+  <header class="header">
+    <div class="wrapper">
+      <div class="header__content">
+        <div class="header__section header__section_links">
+          <button class="header__links_button" href="#">
+            <svg width="20" height="20" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M4 5a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 6a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2zm7-7a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1V5a1 1 0 00-1-1h-2zm-1 7a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zm7-7a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1V5a1 1 0 00-1-1h-2zm-1 7a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zM5 16a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1H5zm5 1a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zm7-1a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 00-1-1h-2z" fill="currentColor"></path>
+            </svg>
+          </button>
+
+          <a class="header__links_button" href="#">
+            <svg width="20" height="20" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M3.586 10.414A2 2 0 003 11.828V19a2 2 0 002 2h5a1 1 0 001-1v-6h2v6a1 1 0 001 1h5a2 2 0 002-2v-7.172a2 2 0 00-.586-1.414l-7.707-7.707a1 1 0 00-1.414 0l-7.707 7.707zM13 12a2 2 0 012 2v5h4v-7.172l-7-7-7 7V19h4v-5a2 2 0 012-2h2z" fill="currentColor"></path>
+            </svg>
+          </a>
+
+          <button class="header__links_button header__links_boards">
+            <svg width="20" height="20" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm2 1a1 1 0 011-1h4a1 1 0 011 1v10a1 1 0 01-1 1H6a1 1 0 01-1-1V6zm9-1a1 1 0 00-1 1v6a1 1 0 001 1h4a1 1 0 001-1V6a1 1 0 00-1-1h-4z" fill="currentColor"></path>
+            </svg>
+
+            <span>Доски</span>
+          </button>
+        </div>
+
+        <div class="header__section header__section_logo">
+          <a class="header__logo" href="#">
+            <img src="https://a.trellocdn.com/prgb/dist/images/header-logo-2x.01ef898811a879595cea.png" alt="Logo">
+          </a>
+        </div>
+
+        <div class="header__section header__section_account">
+          <button class="header__account_button">
+            <svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path d="M12 3a1 1 0 00-1 1v7H4a1 1 0 100 2h7v7a1 1 0 102 0v-7h7a1 1 0 100-2h-7V4a1 1 0 00-1-1z" fill="currentColor"></path>
+            </svg>
+          </button>
+
+          <button class="header__account_button">
+            <svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 20a8 8 0 100-16 8 8 0 000 16zm0 2c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" fill="currentColor"></path><path d="M11 11a1 1 0 112 0v5a1 1 0 11-2 0v-5zm2-3a1 1 0 11-2 0 1 1 0 012 0z" fill="currentColor"></path>
+            </svg>
+          </button>
+
+          <button class="header__account_button">
+            <svg width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2a1 1 0 00-1 1v.078a4.687 4.687 0 00-1.867.715 4.51 4.51 0 00-1.527 1.76 5.914 5.914 0 00-.53 1.658A5.908 5.908 0 007 7.972V8h1-1v3.723l-2.857 4.762A1 1 0 005 18h14a1 1 0 00.858-1.515L17 11.723V8h-1l1-.001v-.027a2.613 2.613 0 00-.01-.215 5.901 5.901 0 00-.066-.546 5.913 5.913 0 00-.53-1.658 4.51 4.51 0 00-1.527-1.76A4.687 4.687 0 0013 3.078V3a1 1 0 00-1-1zM9 7.988V12a1 1 0 01-.143.514L6.767 16h10.467l-2.092-3.486A1 1 0 0115 12V7.988l-.005-.089a3.903 3.903 0 00-.044-.36 3.92 3.92 0 00-.345-1.092 2.512 2.512 0 00-.848-.99C13.378 5.203 12.825 5 12 5s-1.377.203-1.758.457a2.512 2.512 0 00-.848.99A3.918 3.918 0 009.05 7.54a3.911 3.911 0 00-.05.45zM14 19a2 2 0 11-4 0h4z" fill="currentColor"></path>
+            </svg>
+          </button>
+
+          <img class="account__image" src="https://trello-members.s3.amazonaws.com/60058042b46eb66edeca586b/a96d6a3db08e0252d26932585362b287/50.png" alt="Avatar">
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- home -->
+  <main>
+    <div class="home">
+      <div class="wrapper">
+        <div class="home__content">
+          <!-- home header -->
+          <div class="home__header">
+            <div class="home__header_actions">
+              <div class="header__actions_section header__actions_section1">
+                <button class="header__action_button header__board_type">
+                  <svg class="header__board_type_img" width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2 7v8a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2zm2 0v8h2V7H4zm5 0v6a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2zm2 0v6h2V7h-2zm5 10V7a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm2 0V7h2v10h-2z" fill="currentColor"></path>
+                  </svg>
+
+                  <span class="header__board_type_name">Доска</span>
+                  
+                  <svg class="header__board_type_dropdown" width="24" height="24" role="presentation" focusable="false" viewBox="0 0 24 24">
+                    <path d="M11.293 16.707l-7.071-7.07a1 1 0 111.414-1.415L12 14.586l6.364-6.364a1 1 0 111.414 1.414l-7.07 7.071a1 1 0 01-1.415 0z" fill="currentColor"></path>
+                  </svg>
+                </button>
+
+                <h1 class="board__name">
+                  test
+                </h1>
+
+                <a href="#" class="header__action_button header__action_star">
+                  <i class="far fa-star"></i>
+                </a>
+              </div>
+
+              <div class="header__action_divider"></div>
+
+              <div class="header__actions_section header__actions_section2">
+                <a href="#" class="header__action_button header__action_link">
+                  <p class="board__name_link">test</p>
+
+                  <span class="subscribe__type">
+                    Free
+                  </span>
+                </a>
+              </div>
+
+              <div class="header__action_divider"></div>
+
+              <div class="header__actions_section header__actions_section3">
+                <button class="header__action_button header__action_board_type">
+                  <i class="fas fa-user-friends"></i>
+
+                  <span>Командная</span>
+                </button>
+              </div>
+
+              <div class="header__action_divider"></div>
+
+              <div class="header__actions_section header__actions_section4">
+                <button class="header__action_avatar">
+                  <img src="https://trello-members.s3.amazonaws.com/60058042b46eb66edeca586b/a96d6a3db08e0252d26932585362b287/50.png" alt="Avatar">
+                </button>
+
+                <button class="header__action_button header__action_invite">
+                  Пригласить
+                </button>
+              </div>
+            </div>
+
+            <div class="home__header_menu">
+              <button class="header__menu_action header__menu_butler">
+                <img src="https://app.butlerfortrello.com/984a62a105424e1f26fa602f0ac926ef9b4d2159/./img/butler-powerup-btn-white.svg" alt="Butler">
+  
+                <span>Butler</span>
+              </button>
+  
+              <button class="header__menu_action header__menu_menu">
+                <i class="fas fa-ellipsis-h"></i>
+
+                <span>Меню</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- home columns -->
+          <div class="home__columns">
+            <div class="home__columns_content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- scripts -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/menu.js"></script>
+</body>
+
+</html>
