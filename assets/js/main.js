@@ -130,11 +130,13 @@ class Column {
     this.cardAdd.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      this.cardAdd.classList.add('hide');
-      this.newCardButton.classList.remove('hide');
-      this.createCardObject(this.cardAddTextArea.value);
-      this.cardsReRender();
-      this.cardAddTextArea.value = '';
+      if(this.cardAddTextArea.value.trim()) {
+        this.cardAdd.classList.add('hide');
+        this.newCardButton.classList.remove('hide');
+        this.createCardObject(this.cardAddTextArea.value);
+        this.cardsReRender();
+        this.cardAddTextArea.value = '';
+      }
     });
 
     // window event
@@ -149,6 +151,7 @@ class Column {
           card.lastChild.classList.add('hide');
           card.firstChild.classList.remove('hide');
         });
+        this.cardAddTextArea.value = '';
 
         this.nameChange();
 
