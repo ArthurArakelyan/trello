@@ -1,6 +1,5 @@
 const defaultColor = 'rgb(0, 121, 191)';
 let color = defaultColor;
-document.body.style.backgroundColor = color;
 
 if(!localStorage.getItem('color')) {
   localStorage.setItem('color', color);

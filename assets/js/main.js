@@ -2,9 +2,9 @@ const header = document.querySelector('.header');
 const homeColumnsContainer = document.querySelector('.home__columns');
 const homeColumns = document.querySelector('.home__columns_content');
 
-let columns = [{value: 'asdsda', id: randomId()}, {value: 'asfasgga', id: randomId()}];
+let columns = [{ value: 'a', id: randomId() }, { value: 'b', id: randomId() }];
 
-if(!localStorage.getItem('columns')) {
+if (!localStorage.getItem('columns')) {
   localStorage.setItem('columns', JSON.stringify(columns));
 } else {
   columns = JSON.parse(localStorage.getItem('columns'));
@@ -14,6 +14,49 @@ function randomId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+function arrayMove(arr, old_index, new_index) {
+  if (new_index >= arr.length) {
+    let k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+  return arr;
+};
+
+function array_move(arr, old_index, new_index) {
+  while (old_index < 0) {
+    old_index += arr.length;
+  }
+  while (new_index < 0) {
+    new_index += arr.length;
+  }
+  if (new_index >= arr.length) {
+    var k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+  return arr;
+};
+
+function arraymove(arr, fromIndex, toIndex) {
+  let element = arr[fromIndex];
+  arr.splice(fromIndex, 1);
+  arr.splice(toIndex, 0, element);
+  return arr;
+}
+
+function move(array, oldIndex, newIndex) {
+  if (newIndex >= array.length) {
+    newIndex = array.length - 1;
+  }
+  array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+  return array;
+}
+
 class Column {
   constructor(listName, id = randomId()) {
     this.id = id;
@@ -21,6 +64,8 @@ class Column {
 
     this.column = homeColumns.appendChild(document.createElement('div'));
     this.column.classList.add('column');
+    this.column.id = this.id;
+    this.column.draggable = true;
 
     this.columnHeader = this.column.appendChild(document.createElement('div'));
     this.columnHeader.classList.add('column__header');
@@ -55,7 +100,7 @@ class Column {
 
     this.columnForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if(this.columnNameInput.value.trim()) {
+      if (this.columnNameInput.value.trim()) {
         this.nameChange();
       }
 
@@ -130,16 +175,16 @@ class Column {
     window.addEventListener('click', (e) => {
       const cards = document.querySelectorAll('.column__cards_creating');
 
-      if(e.target === document.body ||
-         e.target === homeColumnsContainer ||
-         e.target === homeColumns) {
+      if (e.target === document.body ||
+        e.target === homeColumnsContainer ||
+        e.target === homeColumns) {
         cards.forEach(card => {
           card.lastChild.classList.add('hide');
           card.firstChild.classList.remove('hide');
         });
 
         this.nameChange();
-  
+
         this.columnForm.classList.add('hide');
         this.columnName.classList.remove('hide');
       }
@@ -148,14 +193,14 @@ class Column {
 
   nameChange = () => {
     columns.map(col => {
-      if(col.id === this.id) {
+      if (col.id === this.id) {
         col.value = this.columnNameInput.value;
         localStorage.setItem('columns', JSON.stringify(columns));
       }
 
       return col;
     });
-    
+
     this.listName = this.columnNameInput.value;
     this.columnName.innerHTML = this.listName;
   }
@@ -214,7 +259,7 @@ class AddColumn {
     this.addColumnSection.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      if(this.addColumnInput.value.trim()) {
+      if (this.addColumnInput.value.trim()) {
         columns.push({
           id: randomId(),
           value: this.addColumnInput.value
@@ -246,14 +291,42 @@ class AddColumn {
 
 new AddColumn();
 
-function reRender() {
+function dragAndDrop() {
+  const columnElems = document.querySelectorAll('.column');
+
+  let draggedColumn = null;
+  columnElems.forEach(column => {
+    column.addEventListener('dragstart', function() {
+      draggedColumn = columns.findIndex(col => col.id === this.id);
+    });
+
+    column.addEventListener('dragover', function(e) {
+      e.preventDefault();
+    });
+
+    column.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const droppedColumn = columns.findIndex(col => col.id === this.id);
+      move(columns, draggedColumn, droppedColumn);
+      reRender(columns);
+    });
+  });
+}
+
+function reRender(arr = columns) {
   document.querySelectorAll('.column').forEach(c => c.remove());
   document.querySelector('.column__add').remove();
-  
-  columns.map(col => {
+
+  arr.map(col => {
     return new Column(col.value, col.id);
   });
+  localStorage.setItem('columns', JSON.stringify(columns));
+  dragAndDrop();
   new AddColumn();
 }
 
-window.addEventListener('load', reRender);
+window.addEventListener('load', () => {
+  reRender();
+});
