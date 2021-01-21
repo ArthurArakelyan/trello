@@ -2,7 +2,7 @@ const header = document.querySelector('.header');
 const homeColumnsContainer = document.querySelector('.home__columns');
 const homeColumns = document.querySelector('.home__columns_content');
 
-let columns = [{ value: 'a', id: randomId() }, { value: 'b', id: randomId() }];
+let columns = [{ value: 'a',  id: randomId(), cardsArray: [] }, { value: 'b', id: randomId(), cardsArray: [] }];
 
 if (!localStorage.getItem('columns')) {
   localStorage.setItem('columns', JSON.stringify(columns));
@@ -14,41 +14,6 @@ function randomId() {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
 
-function arrayMove(arr, old_index, new_index) {
-  if (new_index >= arr.length) {
-    let k = new_index - arr.length + 1;
-    while (k--) {
-      arr.push(undefined);
-    }
-  }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-  return arr;
-};
-
-function array_move(arr, old_index, new_index) {
-  while (old_index < 0) {
-    old_index += arr.length;
-  }
-  while (new_index < 0) {
-    new_index += arr.length;
-  }
-  if (new_index >= arr.length) {
-    var k = new_index - arr.length + 1;
-    while (k--) {
-      arr.push(undefined);
-    }
-  }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-  return arr;
-};
-
-function arraymove(arr, fromIndex, toIndex) {
-  let element = arr[fromIndex];
-  arr.splice(fromIndex, 1);
-  arr.splice(toIndex, 0, element);
-  return arr;
-}
-
 function move(array, oldIndex, newIndex) {
   if (newIndex >= array.length) {
     newIndex = array.length - 1;
@@ -58,9 +23,10 @@ function move(array, oldIndex, newIndex) {
 }
 
 class Column {
-  constructor(listName, id = randomId()) {
+  constructor(listName, id = randomId(), cardsArray = []) {
     this.id = id;
     this.listName = listName;
+    this.cardsArray = cardsArray;
 
     this.column = homeColumns.appendChild(document.createElement('div'));
     this.column.classList.add('column');
@@ -166,7 +132,8 @@ class Column {
 
       this.cardAdd.classList.add('hide');
       this.newCardButton.classList.remove('hide');
-      this.createCard(this.cardAddTextArea.value);
+      this.createCardObject(this.cardAddTextArea.value);
+      this.cardsReRender();
       this.cardAddTextArea.value = '';
     });
 
@@ -205,9 +172,41 @@ class Column {
     this.columnName.innerHTML = this.listName;
   }
 
-  createCard = (name) => {
+  cardsReRender = () => {
+    this.removeAllCards();
+    columns.filter(col => col.id === this.id ? this.cardsArray = col.cardsArray : this.cardsArray);
+    this.cardsArray.map(card => {
+      return this.createCard(card.value, card.id);
+    });
+    localStorage.setItem('columns', JSON.stringify(columns));
+  }
+
+  removeAllCards = () => {
+    document.querySelectorAll(`.${this.id}__column_card`).forEach(card => {
+      card.remove();
+    });
+  }
+
+  createCardObject = (name) => {
+    columns.map(col => {
+      if(col.id === this.id) {
+        col.cardsArray.push({
+          id: randomId(),
+          value: name
+        });
+        this.cardsArray = col.cardsArray;
+        localStorage.setItem('columns', JSON.stringify(columns));
+      }
+
+      return col;
+    });
+  }
+
+  createCard = (name, id) => {
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
+    this.card.classList.add(`${this.id}__column_card`);
+    this.card.id = id;
 
     this.cardName = this.card.appendChild(document.createElement('span'));
     this.cardName.classList.add('column__card_name');
@@ -261,8 +260,9 @@ class AddColumn {
 
       if (this.addColumnInput.value.trim()) {
         columns.push({
+          value: this.addColumnInput.value,
           id: randomId(),
-          value: this.addColumnInput.value
+          cardsArray: []
         });
         reRender();
         localStorage.setItem('columns', JSON.stringify(columns));
@@ -320,7 +320,9 @@ function reRender(arr = columns) {
   document.querySelector('.column__add').remove();
 
   arr.map(col => {
-    return new Column(col.value, col.id);
+    const column = new Column(col.value, col.id, col.cardsArray);
+    column.cardsReRender();
+    return column;
   });
   localStorage.setItem('columns', JSON.stringify(columns));
   dragAndDrop();
