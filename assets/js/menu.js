@@ -15,7 +15,7 @@ const menuButton = document.querySelector('.header__menu_menu');
 const colors = [
   'rgb(0, 121, 191)',
   'rgb(210, 144, 52)',
-  'rgb(0, 0, 255)',
+  'rgb(255, 69, 0)',
   'rgb(176, 70, 50)',
   'rgb(137, 96, 158)',
   'rgb(205, 90, 145)',
@@ -54,7 +54,7 @@ colors.map(color => {
 
   menuColor.addEventListener('click', (e) => {
     color = e.target.dataset.color;
-      localStorage.setItem('color', color);
+    localStorage.setItem('color', color);
     document.body.style.backgroundColor = color;
   });
 });

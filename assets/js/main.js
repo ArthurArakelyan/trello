@@ -1,6 +1,7 @@
 const header = document.querySelector('.header');
 const homeColumnsContainer = document.querySelector('.home__columns');
 const homeColumns = document.querySelector('.home__columns_content');
+const defaultTitle = 'Trello';
 
 let columns = [{ value: 'a',  id: randomId(), cardsArray: [] }, { value: 'b', id: randomId(), cardsArray: [] }];
 
@@ -214,6 +215,35 @@ class Column {
     this.cardName = this.card.appendChild(document.createElement('span'));
     this.cardName.classList.add('column__card_name');
     this.cardName.innerHTML = name;
+
+    this.cardNameChange = (cardId, newName) => {
+      columns.map(col => {
+        if(col.id === this.id) {
+          col.cardsArray.map(c => {
+            if(c.id === cardId) {
+              c.value = newName;
+              this.cardsArray = col.cardsArray;
+              localStorage.setItem('columns', JSON.stringify(columns));
+            }
+
+            return c;
+          });
+        }
+
+        return col;
+      });
+      cardModalReRender(newName, this.listName, cardId, this.cardNameChange);
+      this.cardsReRender();
+    }
+
+    this.card.addEventListener('click', () => {
+      cardModal({
+        columnName: this.listName,
+        cardName: name,
+        cardId: id,
+        cardNameChange: (cardId, newName) => this.cardNameChange(cardId, newName)
+      }).modalOpen();
+    });
   }
 }
 
