@@ -423,7 +423,7 @@ button:hover, a:hover {
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
-  padding: 5px 0;
+  padding: 10px 0 5px 0;
 }
 .column__cards_new_card {
   background-color: transparent;

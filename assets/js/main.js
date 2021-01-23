@@ -154,8 +154,10 @@ class Column {
         });
         this.cardAddTextArea.value = '';
 
-        this.nameChange();
-
+        if (this.columnNameInput.value.trim()) {
+          this.nameChange();
+        }
+  
         this.columnForm.classList.add('hide');
         this.columnName.classList.remove('hide');
       }
@@ -180,9 +182,10 @@ class Column {
     this.removeAllCards();
     columns.filter(col => col.id === this.id ? this.cardsArray = col.cardsArray : this.cardsArray);
     this.cardsArray.map(card => {
-      return this.createCard(card.value, card.id);
+      return this.createCard(card.value, card.id, card.description);
     });
     localStorage.setItem('columns', JSON.stringify(columns));
+    this.cardsDragAndDrop();
   }
 
   removeAllCards = () => {
@@ -196,7 +199,8 @@ class Column {
       if(col.id === this.id) {
         col.cardsArray.push({
           id: randomId(),
-          value: name
+          value: name,
+          description: ''
         });
         this.cardsArray = col.cardsArray;
         localStorage.setItem('columns', JSON.stringify(columns));
@@ -206,10 +210,37 @@ class Column {
     });
   }
 
-  createCard = (name, id) => {
+  cardsDragAndDrop = () => {
+    const cards = document.querySelectorAll(`.${this.id}__column_card`);
+
+    let draggedCard = null;
+    cards.forEach(card => {
+      card.addEventListener('dragstart', (e) => {
+        const cardArray = columns.find(col => col.id === this.id).cardsArray;
+        draggedCard = cardArray.findIndex(card => card.id === e.target.id);
+      });
+  
+      card.addEventListener('dragover', function(e) {
+        e.preventDefault();
+      });
+  
+      card.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+  
+        const cardArray = columns.find(col => col.id === this.id).cardsArray;
+        const droppedCard = cardArray.findIndex(card => card.id === e.target.id);
+        move(cardArray, draggedCard, droppedCard);
+        this.cardsReRender();
+      });
+    });
+  }
+
+  createCard = (name, id, description) => {
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
     this.card.classList.add(`${this.id}__column_card`);
+    this.card.draggable = true;
     this.card.id = id;
 
     this.cardName = this.card.appendChild(document.createElement('span'));
@@ -232,16 +263,62 @@ class Column {
 
         return col;
       });
-      cardModalReRender(newName, this.listName, cardId, this.cardNameChange);
+      cardModalReRender(
+        newName,
+        this.listName,
+        cardId,
+        description,
+        this.cardNameChange,
+        this.cardDescriptionChange
+      );
+      this.cardsReRender();
+    }
+
+    this.cardDescriptionChange = (cardId, newDescription) => {
+      columns.map(col => {
+        if(col.id === this.id) {
+          col.cardsArray.map(c => {
+            if(c.id === cardId) {
+              c.description = newDescription;
+              this.cardsArray = col.cardsArray;
+              localStorage.setItem('columns', JSON.stringify(columns));
+            }
+
+            return c;
+          });
+        }
+
+        return col;
+      });
+      cardModalReRender(
+        name,
+        this.listName,
+        cardId,
+        newDescription,
+        this.cardNameChange,
+        this.cardDescriptionChange
+      );
       this.cardsReRender();
     }
 
     this.card.addEventListener('click', () => {
+      if (this.columnNameInput.value.trim()) {
+        this.nameChange();
+      }
+      this.columnForm.classList.add('hide');
+      this.columnName.classList.remove('hide');
+
+      this.cardAdd.classList.add('hide');
+      this.newCardButton.classList.remove('hide');
+      this.cardAddTextArea.value = '';
+
       cardModal({
         columnName: this.listName,
         cardName: name,
         cardId: id,
-        cardNameChange: (cardId, newName) => this.cardNameChange(cardId, newName)
+        description,
+        cardNameChange: (cardId, newName) => this.cardNameChange(cardId, newName),
+        cardDescriptionChange: (cardId, newDescription) => this.cardDescriptionChange(cardId, newDescription)
       }).modalOpen();
     });
   }
@@ -259,7 +336,7 @@ class AddColumn {
       <span>Добавьте ещё одну колонку</span>
     `;
 
-    this.addColumnSection = this.addColumn.appendChild(document.createElement('form'));
+    this.addColumnSection = this.addColumn.appendChild(document.createElement('div'));
     this.addColumnSection.classList.add('column__add_section');
     this.addColumnSection.style.display = 'none';
 
@@ -288,9 +365,7 @@ class AddColumn {
       }, 10);
     });
 
-    this.addColumnSection.addEventListener('submit', (e) => {
-      e.preventDefault();
-
+    this.addColumnButtonConfirm.addEventListener('click', () => {
       if (this.addColumnInput.value.trim()) {
         columns.push({
           value: this.addColumnInput.value,
