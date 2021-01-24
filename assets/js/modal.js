@@ -69,20 +69,14 @@ function cardModalReRender(
         </span>
         <div class="modal__card_info_details modal__card_info_details_description_section">
           <p>Описание</p>
-          <button class="modal__card_info_details_button">
-            Добавить более подробное описание...          
-          </button>
-
-          <div class="modal__card_info_details_add hide">
-            <textarea class="modal__card_info_details_add_textarea" placeholder="Добавить более подробное описание..."></textarea>
-            <div class="modal__card_info_details_add_actions">
-              <button class="modal__card_info_details_actions_save">
-                Сохранить
-              </button>
-              <i class="modal__card_info_details_actions_close fas fa-times"></i>
-            </div>
-          </div>
-          <p class="modal__card_info_details_description"></p>
+        </div>
+      </div>
+      <div class="modal__card_info modal__card_info_description">
+        <span class="modal__card_info_icon">
+          <i class="fas fa-align-justify"></i>
+        </span>
+        <div class="modal__card_info_details modal__card_info_details_action_section">
+          <p>Действия</p>
         </div>
       </div>
     </div>
@@ -111,53 +105,73 @@ function cardModalReRender(
     if(detailsCardNameFormInput.value.trim()) {
       detailsCardNameForm.classList.add('hide');
       detailsCardName.classList.remove('hide');
-      cardNameChange(cardId, detailsCardNameFormInput.value);
+      cardNameChange(cardId, detailsCardNameFormInput.value, description);
     }
   });
 
 
-  const descriptionSection = document.querySelector('.modal__card_info_details_description');
-  const descriptionButton = document.querySelector('.modal__card_info_details_button');
-  const descriptionAddSection = document.querySelector('.modal__card_info_details_add');
-  const descriptionSave = document.querySelector('.modal__card_info_details_actions_save');
-  const descriptionTextarea = document.querySelector('.modal__card_info_details_add_textarea');
-  const descriptionClose = document.querySelector('.modal__card_info_details_actions_close');
+  const descriptionSection = document.querySelector('.modal__card_info_details_description_section');
 
-  if(description) {
-    descriptionButton.classList.add('hide');
-    descriptionSection.innerHTML = description;
-    descriptionSection.classList.remove('hide');
+  const descriptionButton = descriptionSection.appendChild(document.createElement('button'));
+  descriptionButton.classList.add('modal__card_info_details_button');
+  descriptionButton.innerHTML = 'Добавить более подробное описание...';
+
+
+  const descriptionAddSection = descriptionSection.appendChild(document.createElement('div'));
+  descriptionAddSection.classList.add('modal__card_info_details_add');
+  descriptionAddSection.classList.add('hide');
+
+  const descriptionAddTextarea = descriptionAddSection.appendChild(document.createElement('textarea'));
+  descriptionAddTextarea.classList.add('modal__card_info_details_add_textarea');
+  descriptionAddTextarea.placeholder = 'Добавить более подробное описание...';
+
+  const descriptionAddButtons = descriptionAddSection.appendChild(document.createElement('div'));
+  descriptionAddButtons.classList.add('modal__card_info_details_add_actions');
+
+  const descriptionAddSave = descriptionAddButtons.appendChild(document.createElement('button'));
+  descriptionAddSave.classList.add('modal__card_info_details_actions_save');
+  descriptionAddSave.innerHTML = 'Сохранить';
+
+  const descriptionAddClose = descriptionAddButtons.appendChild(document.createElement('i'));
+  descriptionAddClose.classList.add('modal__card_info_details_actions_close');
+  descriptionAddClose.classList.add('fas');
+  descriptionAddClose.classList.add('fa-times');
+
+
+  const descriptionContainer = descriptionSection.appendChild(document.createElement('p'));
+  descriptionContainer.classList.add('modal__card_info_details_description');
+  if(!description) {
+    descriptionContainer.classList.add('hide');
   } else {
-    descriptionSection.classList.add('hide');
+    descriptionContainer.innerHTML = description;
+    descriptionButton.classList.add('hide');
   }
 
-  descriptionSection.addEventListener('click', () => {
-    descriptionSection.classList.add('hide');
-    descriptionAddSection.classList.remove('hide');
-    descriptionTextarea.focus();
-    descriptionTextarea.value = description;
-  });
-
-  descriptionButton.addEventListener('click', () => {
+  function descriptionAddSectionOpen() {
+    descriptionContainer.classList.add('hide');
     descriptionButton.classList.add('hide');
     descriptionAddSection.classList.remove('hide');
-    descriptionTextarea.focus();
-    descriptionTextarea.value = description;
+    descriptionAddTextarea.focus();
+    descriptionAddTextarea.value = description;
+  }
+
+  descriptionButton.addEventListener('click', () => {
+    descriptionAddSectionOpen();
   });
 
-  descriptionSave.addEventListener('click', () => {
-    cardDescriptionChange(cardId, descriptionTextarea.value.trim());
-    descriptionSection.innerHTML = descriptionTextarea.value;
-
-    descriptionButton.classList.remove('hide');
+  descriptionAddSave.addEventListener('click', () => {
     descriptionAddSection.classList.add('hide');
-    descriptionTextarea.value = '';
+    descriptionButton.classList.remove('hide');
+    cardDescriptionChange(cardId, cardName, descriptionAddTextarea.value);
   });
 
-  descriptionClose.addEventListener('click', () => {
-    descriptionButton.classList.remove('hide');
+  descriptionAddClose.addEventListener('click', () => {
     descriptionAddSection.classList.add('hide');
-    descriptionTextarea.value = '';
+    descriptionButton.classList.remove('hide');
+  });
+
+  descriptionContainer.addEventListener('click', () => {
+    descriptionAddSectionOpen();
   });
 }
 

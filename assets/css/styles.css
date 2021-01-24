@@ -506,8 +506,9 @@ button:hover, a:hover {
   background-color: white;
   padding: 8px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
   margin-top: 10px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.582);
 }
@@ -515,7 +516,18 @@ button:hover, a:hover {
   background-color: hsla(0,0%,100%,.3);
 }
 .column__card_name {
-  color: black;
+  color: rgb(23, 43, 77);
+}
+.column__card_badges {
+  margin-top: 10px;
+  color: rgb(107, 119, 140);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.column__card_badge {
+  font-size: 12px !important;
+  margin-left: 2px;
 }
 
 /*
@@ -598,4 +610,27 @@ button:hover, a:hover {
 }
 .menu__color:hover {
   opacity: 0.8;
+}
+
+@media only screen and (max-width: 835px) {
+  .home__header {
+    flex-direction: column;
+  }
+  .home__header_actions {
+    width: 100%;
+  }
+  .home__header_menu {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .home__header_menu button {
+    min-height: 32px;
+  }
+}
+
+@media only screen and (max-width: 750px) {
+  .header__links_boards span {
+    display: none;
+  }
 }

@@ -236,6 +236,24 @@ class Column {
     });
   }
 
+  cardPropertyChange = (cardId, property, newProperty) => {
+    columns.map(col => {
+      if(col.id === this.id) {
+        col.cardsArray.map(c => {
+          if(c.id === cardId) {
+            c[property] = newProperty;
+            this.cardsArray = col.cardsArray;
+            localStorage.setItem('columns', JSON.stringify(columns));
+          }
+
+          return c;
+        });
+      }
+
+      return col;
+    });
+  }
+
   createCard = (name, id, description) => {
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
@@ -247,54 +265,35 @@ class Column {
     this.cardName.classList.add('column__card_name');
     this.cardName.innerHTML = name;
 
-    this.cardNameChange = (cardId, newName) => {
-      columns.map(col => {
-        if(col.id === this.id) {
-          col.cardsArray.map(c => {
-            if(c.id === cardId) {
-              c.value = newName;
-              this.cardsArray = col.cardsArray;
-              localStorage.setItem('columns', JSON.stringify(columns));
-            }
+    if(description) {
+      this.cardBadges = this.card.appendChild(document.createElement('div'));
+      this.cardBadges.classList.add('column__card_badges');
+  
+      this.cardDescriptionIcon = this.cardBadges.appendChild(document.createElement('span'));
+      this.cardDescriptionIcon.classList.add('column__card_badge');
+      this.cardDescriptionIcon.innerHTML = '<i class="fas fa-align-left"></i>';
+    }
 
-            return c;
-          });
-        }
-
-        return col;
-      });
+    this.cardDescriptionChange = (cardId, name, newDescription) => {
+      this.cardPropertyChange(cardId, 'description', newDescription);
       cardModalReRender(
-        newName,
+        name,
         this.listName,
         cardId,
-        description,
+        newDescription,
         this.cardNameChange,
         this.cardDescriptionChange
       );
       this.cardsReRender();
     }
 
-    this.cardDescriptionChange = (cardId, newDescription) => {
-      columns.map(col => {
-        if(col.id === this.id) {
-          col.cardsArray.map(c => {
-            if(c.id === cardId) {
-              c.description = newDescription;
-              this.cardsArray = col.cardsArray;
-              localStorage.setItem('columns', JSON.stringify(columns));
-            }
-
-            return c;
-          });
-        }
-
-        return col;
-      });
+    this.cardNameChange = (cardId, newName, description) => {
+      this.cardPropertyChange(cardId, 'value', newName);
       cardModalReRender(
-        name,
+        newName,
         this.listName,
         cardId,
-        newDescription,
+        description,
         this.cardNameChange,
         this.cardDescriptionChange
       );
@@ -317,8 +316,8 @@ class Column {
         cardName: name,
         cardId: id,
         description,
-        cardNameChange: (cardId, newName) => this.cardNameChange(cardId, newName),
-        cardDescriptionChange: (cardId, newDescription) => this.cardDescriptionChange(cardId, newDescription)
+        cardNameChange: (cardId, newName, description) => this.cardNameChange(cardId, newName, description),
+        cardDescriptionChange: (cardId, name, newDescription) => this.cardDescriptionChange(cardId, name, newDescription)
       }).modalOpen();
     });
   }

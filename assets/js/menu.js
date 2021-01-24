@@ -60,12 +60,14 @@ colors.map(color => {
 });
 
 menuButton.addEventListener('click', () => {
-  if(!menu.classList.contains('hide')) {
+  if(menu.style.display === 'none' && !menu.classList.contains('hide')) {
     menu.style.display = 'block';
 
     setTimeout(() => {
       menu.classList.add('open');
     }, 20);
+  } else {
+    menuHide();
   }
 });
 
