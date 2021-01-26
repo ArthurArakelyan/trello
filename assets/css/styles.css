@@ -528,6 +528,10 @@ button:hover, a:hover {
 .column__card_badge {
   font-size: 12px !important;
   margin-left: 2px;
+  margin-bottom: 2px;
+}
+.column__card_badge:not(:nth-child(1)) {
+  margin-left: 15px;
 }
 
 /*

@@ -182,7 +182,7 @@ class Column {
     this.removeAllCards();
     columns.filter(col => col.id === this.id ? this.cardsArray = col.cardsArray : this.cardsArray);
     this.cardsArray.map(card => {
-      return this.createCard(card.value, card.id, card.description);
+      return this.createCard(card.value, card.id, card.description, card.comments);
     });
     localStorage.setItem('columns', JSON.stringify(columns));
     this.cardsDragAndDrop();
@@ -200,7 +200,8 @@ class Column {
         col.cardsArray.push({
           id: randomId(),
           value: name,
-          description: ''
+          description: '',
+          comments: []
         });
         this.cardsArray = col.cardsArray;
         localStorage.setItem('columns', JSON.stringify(columns));
@@ -254,7 +255,7 @@ class Column {
     });
   }
 
-  createCard = (name, id, description) => {
+  createCard = (name, id, description, comments) => {
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
     this.card.classList.add(`${this.id}__column_card`);
@@ -265,37 +266,84 @@ class Column {
     this.cardName.classList.add('column__card_name');
     this.cardName.innerHTML = name;
 
-    if(description) {
+    if(description || comments.length) {
       this.cardBadges = this.card.appendChild(document.createElement('div'));
       this.cardBadges.classList.add('column__card_badges');
   
-      this.cardDescriptionIcon = this.cardBadges.appendChild(document.createElement('span'));
-      this.cardDescriptionIcon.classList.add('column__card_badge');
-      this.cardDescriptionIcon.innerHTML = '<i class="fas fa-align-left"></i>';
+      if(description) {
+        this.cardDescriptionIconDescription = this.cardBadges.appendChild(document.createElement('span'));
+        this.cardDescriptionIconDescription.classList.add('column__card_badge');
+        this.cardDescriptionIconDescription.title = 'Эта карточка с описанием.';
+        this.cardDescriptionIconDescription.innerHTML = '<i class="fas fa-align-left"></i>';
+      }
+      if(comments.length) {
+        this.cardDescriptionIconComments = this.cardBadges.appendChild(document.createElement('span'));
+        this.cardDescriptionIconComments.classList.add('column__card_badge');
+        this.cardDescriptionIconComments.title = 'Комментарии';
+        this.cardDescriptionIconComments.innerHTML = `
+          <i class="far fa-comment"></i>
+          <span>${comments.length}</span>
+        `;
+      }
     }
 
-    this.cardDescriptionChange = (cardId, name, newDescription) => {
+    this.cardCommentsAdd = (cardId, name, description, newComments) => {
+      columns.map(col => {
+        if(col.id === this.id) {
+          col.cardsArray.map(c => {
+            if(c.id === cardId) {
+              c.comments = newComments;
+
+              this.cardsArray = col.cardsArray;
+              localStorage.setItem('columns', JSON.stringify(columns));
+            }
+  
+            return c;
+          });
+        }
+  
+        return col;
+      });
+
+      cardModalReRender(
+        name,
+        this.listName,
+        cardId,
+        description,
+        newComments,
+        this.cardNameChange,
+        this.cardDescriptionChange,
+        this.cardCommentsAdd
+      );
+      this.cardsReRender();
+    }
+
+    this.cardDescriptionChange = (cardId, name, newDescription, comments) => {
       this.cardPropertyChange(cardId, 'description', newDescription);
       cardModalReRender(
         name,
         this.listName,
         cardId,
         newDescription,
+        comments,
         this.cardNameChange,
-        this.cardDescriptionChange
+        this.cardDescriptionChange,
+        this.cardCommentsAdd
       );
       this.cardsReRender();
     }
 
-    this.cardNameChange = (cardId, newName, description) => {
+    this.cardNameChange = (cardId, newName, description, comments) => {
       this.cardPropertyChange(cardId, 'value', newName);
       cardModalReRender(
         newName,
         this.listName,
         cardId,
         description,
+        comments,
         this.cardNameChange,
-        this.cardDescriptionChange
+        this.cardDescriptionChange,
+        this.cardCommentsAdd
       );
       this.cardsReRender();
     }
@@ -316,8 +364,10 @@ class Column {
         cardName: name,
         cardId: id,
         description,
-        cardNameChange: (cardId, newName, description) => this.cardNameChange(cardId, newName, description),
-        cardDescriptionChange: (cardId, name, newDescription) => this.cardDescriptionChange(cardId, name, newDescription)
+        comments,
+        cardNameChange: (cardId, newName, description, comments) => this.cardNameChange(cardId, newName, description, comments),
+        cardDescriptionChange: (cardId, name, newDescription, comments) => this.cardDescriptionChange(cardId, name, newDescription, comments),
+        cardCommentsAdd: (cardId, name, description, newComments) => this.cardCommentsAdd(cardId, name, description, newComments)
       }).modalOpen();
     });
   }
