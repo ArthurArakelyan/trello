@@ -3,7 +3,11 @@ const homeColumnsContainer = document.querySelector('.home__columns');
 const homeColumns = document.querySelector('.home__columns_content');
 const defaultTitle = 'Trello';
 
-let columns = [{ value: 'a',  id: randomId(), cardsArray: [] }, { value: 'b', id: randomId(), cardsArray: [] }];
+let columns = [
+  { value: 'To do',  id: randomId(), cardsArray: [] },
+  { value: 'Doing', id: randomId(), cardsArray: [] },
+  { value: 'Done', id: randomId(), cardsArray: [] }
+];
 
 if (!localStorage.getItem('columns')) {
   localStorage.setItem('columns', JSON.stringify(columns));
@@ -73,6 +77,7 @@ class Column {
 
       this.columnForm.classList.add('hide');
       this.columnName.classList.remove('hide');
+      this.columnNameInput.value = '';
     });
 
     // column cards
@@ -143,23 +148,29 @@ class Column {
     // window event
 
     window.addEventListener('click', (e) => {
-      const cards = document.querySelectorAll('.column__cards_creating');
-
-      if (e.target === document.body ||
-        e.target === homeColumnsContainer ||
-        e.target === homeColumns) {
-        cards.forEach(card => {
-          card.lastChild.classList.add('hide');
-          card.firstChild.classList.remove('hide');
-        });
-        this.cardAddTextArea.value = '';
-
+      if(e.target !== this.columnName &&
+         e.target !== this.columnNameInput) {
         if (this.columnNameInput.value.trim()) {
           this.nameChange();
         }
-  
+    
         this.columnForm.classList.add('hide');
         this.columnName.classList.remove('hide');
+        this.columnNameInput.value = '';
+      }
+
+      if(e.target !== this.cardAdd &&
+         e.target !== this.cardAddButton &&
+         e.target !== this.cardAddButtons &&
+         e.target !== this.cardAddClose &&
+         e.target !== this.cardAddTextArea &&
+         e.target !== this.newCardButton &&
+         e.target !== this.cardsCreating &&
+         e.target !== this.newCardButton.firstElementChild &&
+         e.target !== this.newCardButton.lastElementChild) {
+        this.cardAdd.classList.add('hide');
+        this.newCardButton.classList.remove('hide');
+        this.cardAddTextArea.value = '';
       }
     });
   }
@@ -287,24 +298,8 @@ class Column {
       }
     }
 
-    this.cardCommentsAdd = (cardId, name, description, newComments) => {
-      columns.map(col => {
-        if(col.id === this.id) {
-          col.cardsArray.map(c => {
-            if(c.id === cardId) {
-              c.comments = newComments;
-
-              this.cardsArray = col.cardsArray;
-              localStorage.setItem('columns', JSON.stringify(columns));
-            }
-  
-            return c;
-          });
-        }
-  
-        return col;
-      });
-
+    this.cardCommentsChange = (cardId, name, description, newComments) => {
+      this.cardPropertyChange(cardId, 'comments', newComments);
       cardModalReRender(
         name,
         this.listName,
@@ -313,7 +308,7 @@ class Column {
         newComments,
         this.cardNameChange,
         this.cardDescriptionChange,
-        this.cardCommentsAdd
+        this.cardCommentsChange
       );
       this.cardsReRender();
     }
@@ -328,7 +323,7 @@ class Column {
         comments,
         this.cardNameChange,
         this.cardDescriptionChange,
-        this.cardCommentsAdd
+        this.cardCommentsChange
       );
       this.cardsReRender();
     }
@@ -343,7 +338,7 @@ class Column {
         comments,
         this.cardNameChange,
         this.cardDescriptionChange,
-        this.cardCommentsAdd
+        this.cardCommentsChange
       );
       this.cardsReRender();
     }
@@ -367,7 +362,7 @@ class Column {
         comments,
         cardNameChange: (cardId, newName, description, comments) => this.cardNameChange(cardId, newName, description, comments),
         cardDescriptionChange: (cardId, name, newDescription, comments) => this.cardDescriptionChange(cardId, name, newDescription, comments),
-        cardCommentsAdd: (cardId, name, description, newComments) => this.cardCommentsAdd(cardId, name, description, newComments)
+        cardCommentsChange: (cardId, name, description, newComments) => this.cardCommentsChange(cardId, name, description, newComments)
       }).modalOpen();
     });
   }

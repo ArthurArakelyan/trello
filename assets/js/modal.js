@@ -47,15 +47,17 @@ function cardModalReRender(
   comments,
   cardNameChange,
   cardDescriptionChange,
-  cardCommentsAdd
+  cardCommentsChange
 ) {
   const modalContent = document.querySelector('.modal__content');
-  console.log();
   modalContent.innerHTML = `
+    <span class="modal__close" data-close="true">
+      <i class="fas fa-times" data-close="true"></i>
+    </span>
     <div class="modal__card_infos">
       <div class="modal__card_info modal__card_info_name">
         <span class="modal__card_info_icon">
-
+          <i class="far fa-credit-card"></i>
         </span>
         <div class="modal__card_info_details">
           <p class="modal__card_info_details_card_name">${cardName}</p>
@@ -95,7 +97,6 @@ function cardModalReRender(
 
   document.title = `${cardName} на доске ${boardName} | Trello`;
 
-  const detailsCardSection = document.querySelector('.modal__card_info_name');
   const detailsCardName = document.querySelector('.modal__card_info_details_card_name');
   const detailsCardNameForm = document.querySelector('.modal__card_info_deatils_card_name_form');
   const detailsCardNameFormInput = detailsCardNameForm.firstElementChild;
@@ -111,9 +112,12 @@ function cardModalReRender(
     e.preventDefault();
 
     if(detailsCardNameFormInput.value.trim()) {
+      if(detailsCardNameFormInput.value !== cardName) {
+        cardNameChange(cardId, detailsCardNameFormInput.value, description, comments);
+      }
       detailsCardNameForm.classList.add('hide');
       detailsCardName.classList.remove('hide');
-      cardNameChange(cardId, detailsCardNameFormInput.value, description, comments);
+      detailsCardNameFormInput.value = '';
     }
   });
 
@@ -218,7 +222,7 @@ function cardModalReRender(
     commentSave.classList.remove('disabled');
   }
 
-  function createComment(value, time, fullTime) {
+  function createComment(value, time, fullTime, id) {
     const commentSection = actionsSection.appendChild(document.createElement('div'));
     commentSection.classList.add('modal__card_info_actions_comment_comment');
   
@@ -247,10 +251,97 @@ function cardModalReRender(
     const commentInfo = commentInfoSection.appendChild(document.createElement('p'));
     commentInfo.classList.add('modal__card_info_actions_comment_comment_info');
     commentInfo.innerHTML = value;
+
+  
+    const commentEditContainer = commentInfoSection.appendChild(document.createElement('div'));
+    commentEditContainer.classList.add('modal__card_info_actions_comment_edit_container');
+    commentEditContainer.classList.add('hide');
+  
+    const commentEditTextarea = commentEditContainer.appendChild(document.createElement('textarea'));
+    commentEditTextarea.classList.add('modal__card_info_actions_comment_textarea');
+    
+    const commentEditButtons = commentEditContainer.appendChild(document.createElement('div'));
+    commentEditButtons.classList.add('modal__card_info_actions_comment_buttons');
+  
+    const commentEditSave = commentEditButtons.appendChild(document.createElement('button'));
+    commentEditSave.classList.add('modal__card_info_actions_comment_save');
+    commentEditSave.classList.add('modal__card_info_actions_comment_edit_save');
+    commentEditSave.innerHTML = 'Сохранить';
+
+    const commentEditClose = commentEditButtons.appendChild(document.createElement('button'));
+    commentEditClose.classList.add('modal__card_info_actions_comment_close');
+    commentEditClose.innerHTML = '<i class="fas fa-times"></i>';
+
+
+    const commentActions = commentInfoSection.appendChild(document.createElement('div'));
+    commentActions.classList.add('modal__card_info_actions_comment_comment_actions');
+
+    const commentEdit = commentActions.appendChild(document.createElement('button'));
+    commentEdit.classList.add('modal__card_info_actions_comment_comment_actions_action');
+    commentEdit.innerHTML = 'Изменить';
+
+    const commentButtonsDivider = commentActions.appendChild(document.createElement('span'));
+    commentButtonsDivider.classList.add('modal__card_info_actions_comment_comment_actions_divider');
+    commentButtonsDivider.innerHTML = '-';
+
+    const commentDelete = commentActions.appendChild(document.createElement('button'));
+    commentDelete.classList.add('modal__card_info_actions_comment_comment_actions_action');
+    commentDelete.innerHTML = 'Удалить';
+
+    commentEdit.addEventListener('click', () => {
+      commentEditContainer.classList.remove('hide');
+      commentInfo.classList.add('hide');
+      commentEditTextarea.value = value;
+      commentEditTextarea.focus();
+    });
+
+    commentEditTextarea.addEventListener('input', () => {
+      if(!commentEditTextarea.value.trim()) {
+        commentEditSave.classList.add('disabled');
+      } else {
+        commentEditSave.classList.remove('disabled');
+      }
+    });
+
+    commentEditSave.addEventListener('click', () => {
+      if(commentEditTextarea.value.trim()) {
+        commentEditContainer.classList.add('hide');
+        commentInfo.classList.remove('hide');
+        cardCommentsChange(
+          cardId,
+          cardName,
+          description,
+          comments.map(com => {
+            if(com.id === id) {
+              com.value = commentEditTextarea.value
+            }
+
+            return com;
+          })
+        );
+
+        commentEditTextarea.value = '';
+      }
+    });
+
+    commentEditClose.addEventListener('click', () => {
+      commentEditContainer.classList.add('hide');
+      commentInfo.classList.remove('hide');
+      commentEditTextarea.value = '';
+    });
+
+    commentDelete.addEventListener('click', () => {
+      cardCommentsChange(
+        cardId,
+        cardName,
+        description,
+        comments.filter(com => com.id !== id)
+      );
+    });
   }
 
   comments.map(comment => {
-    createComment(comment.value, comment.time, comment.fullTime);
+    createComment(comment.value, comment.time, comment.fullTime, comment.id);
   });
 
 
@@ -274,7 +365,7 @@ function cardModalReRender(
 
   commentSave.addEventListener('click', () => {
     if(commentTextarea.value.trim()) {
-      cardCommentsAdd(
+      cardCommentsChange(
         cardId,
         cardName,
         description,
@@ -300,6 +391,34 @@ function cardModalReRender(
       commentSave.classList.remove('open');
       commentTextarea.value = '';
     }
+
+    if(e.target !== detailsCardName &&
+       e.target !== detailsCardNameForm &&
+       e.target !== detailsCardNameFormInput) {
+      if(detailsCardNameFormInput.value.trim()) {
+        if(detailsCardNameFormInput.value !== cardName) {
+          cardNameChange(cardId, detailsCardNameFormInput.value, description, comments);
+        }
+        detailsCardNameForm.classList.add('hide');
+        detailsCardName.classList.remove('hide');
+        detailsCardNameFormInput.value = '';
+      }
+    }
+
+    if(e.target !== descriptionContainer &&
+       e.target !== descriptionButton &&
+       e.target !== descriptionAddTextarea &&
+       e.target !== descriptionAddSection &&
+       e.target !== descriptionAddSave &&
+       e.target !== descriptionAddClose) {
+      if(!description) {
+        descriptionAddSection.classList.add('hide');
+        descriptionButton.classList.remove('hide');
+      } else {
+        descriptionAddSection.classList.add('hide');
+        descriptionContainer.classList.remove('hide');
+      }
+    }
   });
 }
 
@@ -311,7 +430,7 @@ function cardModal({
   comments,
   cardNameChange,
   cardDescriptionChange,
-  cardCommentsAdd
+  cardCommentsChange
 }) {
   const modal = createModal();
   cardModalReRender(
@@ -322,7 +441,7 @@ function cardModal({
     comments,
     cardNameChange,
     cardDescriptionChange,
-    cardCommentsAdd
+    cardCommentsChange
   );
   return modal;
 }

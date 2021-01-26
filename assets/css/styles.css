@@ -616,16 +616,23 @@ button:hover, a:hover {
   opacity: 0.8;
 }
 
+/*
+*** responsive
+*/
+
 @media only screen and (max-width: 835px) {
   .home__header {
     flex-direction: column;
   }
   .home__header_actions {
-    width: 100%;
+    width: fit-content;
+  }
+  .menu.open {
+    width: 300px;
   }
   .home__header_menu {
     margin-top: 10px;
-    width: 100%;
+    width: fit-content;
     justify-content: flex-start;
   }
   .home__header_menu button {

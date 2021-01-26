@@ -1,5 +1,5 @@
-let boardName = 'test';
-let subscribeType = 'free';
+let boardName = 'Rate';
+let subscribeType = 'business';
 let boardLiked = 'false';
 
 if(!localStorage.getItem('boardLike')) {
