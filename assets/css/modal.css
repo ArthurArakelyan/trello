@@ -52,6 +52,9 @@
   background-color: #EBECF0;
   margin: 0 auto;
   margin-bottom: 80px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   transform: translateY(47px);
   opacity: 0;
   transition: opacity .3s ease-in-out;
@@ -115,6 +118,7 @@
   font-size: 18px !important;
   font-weight: 700 !important;
   cursor: pointer;
+  width: 80%;
 }
 .modal__card_info_details_card_name.hide {
   display: none;
@@ -354,6 +358,9 @@
   font-weight: 500;
   color: #5e6c84;
 }
+.modal__card_info_actions_comment_comment_creation_info_time span:nth-child(2) {
+  margin-left: 4px;
+}
 .modal__card_info_actions_comment_comment_info {
   padding: 12px;
   box-shadow: inset 0 0 0 2px #dfe1e6;
@@ -386,13 +393,53 @@
 }
 
 
-.modal__card_info_menu {
-  width: 30%;
+.modal__card_upgrades_menu {
+  width: 26%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 41px;
+}
+.modal__card_upgrades {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
+.modal__card_upgrade_heading {
+  text-transform: uppercase;
+  color: #5e6c84;
+  width: 100%;
+  font-size: 12px;
+  text-align: left;
+  font-weight: 700;
+}
+.modal__card_upgrade_button {
+  color: #5e6c84;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  justify-content: flex-start;
+  padding: 10px;
+  width: 100%;
+  background-color: rgba(9,30,66,.04);
+}
+.modal__card_upgrade_button:hover {
+  background-color: rgba(9,30,66,.08);
+}
+.modal__card_upgrade_button:active {
+  background-color: #e4f0f6;
+  color: #0079bf;
+}
+.modal__card_upgrade_button p {
+  margin-left: 10px;
+}
+
+/*
+*** responsive
+*/
 
 @media only screen and (max-width: 780px) {
   .modal__content {

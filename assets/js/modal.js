@@ -16,6 +16,11 @@ function createModal(children = '') {
     </div>
   `;
 
+  if(document.querySelectorAll('.modal').length > 1) {
+    document.querySelectorAll('.modal').forEach(m => m.remove());
+    document.title = defaultTitle;
+  }
+
   function modalOpen() {
     setTimeout(() => {
       modal.classList.add('open');
@@ -40,15 +45,14 @@ function createModal(children = '') {
 }
 
 function cardModalReRender(
-  cardName,
+  card,
   columnName,
-  cardId,
-  description,
-  comments,
   cardNameChange,
   cardDescriptionChange,
   cardCommentsChange
 ) {
+  const {value: cardName, description, comments} = card;
+
   const modalContent = document.querySelector('.modal__content');
   modalContent.innerHTML = `
     <span class="modal__close" data-close="true">
@@ -90,8 +94,34 @@ function cardModalReRender(
       </div>
     </div>
 
-    <div class="modal__card_info_menu">
-
+    <div class="modal__card_upgrades_menu">
+      <div class="modal__card_upgrades">
+        <h5 class="modal__card_upgrade_heading">добавить на карточку</h5>
+        <button class="modal__card_upgrade_button">
+          <i class="far fa-user"></i>
+          <p>Участники</p>
+        </button>
+        <button class="modal__card_upgrade_button">
+          <i class="fas fa-tag"></i>
+          <p>Метки</p>
+        </button>
+        <button class="modal__card_upgrade_button">
+          <i class="far fa-check-square"></i>
+          <p>Чек-лист</p>
+        </button>
+        <button class="modal__card_upgrade_button">
+          <i class="far fa-clock"></i>
+          <p>Срок</p>
+        </button>
+        <button class="modal__card_upgrade_button">
+          <i class="fas fa-paperclip"></i>
+          <p>Вложение</p>
+        </button>
+        <button class="modal__card_upgrade_button">
+          <i class="far fa-credit-card"></i>
+          <p>Обложка</p>
+        </button>
+      </div>
     </div>
   `;
 
@@ -113,7 +143,7 @@ function cardModalReRender(
 
     if(detailsCardNameFormInput.value.trim()) {
       if(detailsCardNameFormInput.value !== cardName) {
-        cardNameChange(cardId, detailsCardNameFormInput.value, description, comments);
+        cardNameChange(card, detailsCardNameFormInput.value);
       }
       detailsCardNameForm.classList.add('hide');
       detailsCardName.classList.remove('hide');
@@ -174,7 +204,7 @@ function cardModalReRender(
   descriptionAddSave.addEventListener('click', () => {
     descriptionAddSection.classList.add('hide');
     descriptionButton.classList.remove('hide');
-    cardDescriptionChange(cardId, cardName, descriptionAddTextarea.value, comments);
+    cardDescriptionChange(card, descriptionAddTextarea.value);
   });
 
   descriptionAddClose.addEventListener('click', () => {
@@ -222,7 +252,7 @@ function cardModalReRender(
     commentSave.classList.remove('disabled');
   }
 
-  function createComment(value, time, fullTime, id) {
+  function createComment({value, time, fullTime, id, changed, changedTime}) {
     const commentSection = actionsSection.appendChild(document.createElement('div'));
     commentSection.classList.add('modal__card_info_actions_comment_comment');
   
@@ -243,10 +273,20 @@ function cardModalReRender(
     commentCreationUsername.classList.add('modal__card_info_actions_comment_comment_creation_info_username');
     commentCreationUsername.innerHTML = 'Artur';
   
-    const commentCreationTime = commentCreationInfo.appendChild(document.createElement('span'));
-    commentCreationTime.classList.add('modal__card_info_actions_comment_comment_creation_info_time');
+    const commentCreationTimeSection = commentCreationInfo.appendChild(document.createElement('p'));
+    commentCreationTimeSection.classList.add('modal__card_info_actions_comment_comment_creation_info_time');
+
+    const commentCreationTime = commentCreationTimeSection.appendChild(document.createElement('span'));
     commentCreationTime.title = time;
     commentCreationTime.innerHTML = moment(fullTime).fromNow();
+
+    if(changed) {
+      const commentCreationTimeChanged = commentCreationTimeSection.appendChild(document.createElement('span'));
+      commentCreationTimeChanged.innerHTML = '(изменён)';
+      if(changedTime) {
+        commentCreationTimeChanged.title = moment(changedTime).fromNow();
+      }
+    }
 
     const commentInfo = commentInfoSection.appendChild(document.createElement('p'));
     commentInfo.classList.add('modal__card_info_actions_comment_comment_info');
@@ -308,12 +348,12 @@ function cardModalReRender(
         commentEditContainer.classList.add('hide');
         commentInfo.classList.remove('hide');
         cardCommentsChange(
-          cardId,
-          cardName,
-          description,
+          card,
           comments.map(com => {
-            if(com.id === id) {
-              com.value = commentEditTextarea.value
+            if(com.id === id && com.value !== commentEditTextarea.value) {
+              com.value = commentEditTextarea.value;
+              com.changed = true;
+              com.changedTime = moment().format();
             }
 
             return com;
@@ -332,16 +372,14 @@ function cardModalReRender(
 
     commentDelete.addEventListener('click', () => {
       cardCommentsChange(
-        cardId,
-        cardName,
-        description,
+        card,
         comments.filter(com => com.id !== id)
       );
     });
   }
 
   comments.map(comment => {
-    createComment(comment.value, comment.time, comment.fullTime, comment.id);
+    createComment(comment);
   });
 
 
@@ -366,14 +404,14 @@ function cardModalReRender(
   commentSave.addEventListener('click', () => {
     if(commentTextarea.value.trim()) {
       cardCommentsChange(
-        cardId,
-        cardName,
-        description,
+        card,
         [...comments, {
           id: randomId(),
           value: commentTextarea.value,
           time: moment().format('MMMM Do YYYY, h:mm a'),
-          fullTime: moment().format()
+          fullTime: moment().format(),
+          changed: false,
+          changedTime: null
         }]
       );
   
@@ -397,7 +435,7 @@ function cardModalReRender(
        e.target !== detailsCardNameFormInput) {
       if(detailsCardNameFormInput.value.trim()) {
         if(detailsCardNameFormInput.value !== cardName) {
-          cardNameChange(cardId, detailsCardNameFormInput.value, description, comments);
+          cardNameChange(card, detailsCardNameFormInput.value);
         }
         detailsCardNameForm.classList.add('hide');
         detailsCardName.classList.remove('hide');
@@ -423,22 +461,16 @@ function cardModalReRender(
 }
 
 function cardModal({
+  card,
   columnName,
-  cardName,
-  cardId,
-  description,
-  comments,
   cardNameChange,
   cardDescriptionChange,
   cardCommentsChange
 }) {
   const modal = createModal();
   cardModalReRender(
-    cardName,
+    card,
     columnName,
-    cardId,
-    description,
-    comments,
     cardNameChange,
     cardDescriptionChange,
     cardCommentsChange
