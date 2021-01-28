@@ -1,3 +1,18 @@
+let labels = [
+  {id: randomId(), value: '', color: '#61bd4f'},
+  {id: randomId(), value: '', color: '#f2d600'},
+  {id: randomId(), value: '', color: '#ff9f1a'},
+  {id: randomId(), value: '', color: '#eb5a46'},
+  {id: randomId(), value: '', color: '#c377e0'},
+  {id: randomId(), value: '', color: '#0079bf'}
+];
+
+if(!localStorage.getItem('labels')) {
+  localStorage.setItem('labels', JSON.stringify(labels));
+} else {
+  labels = JSON.parse(localStorage.getItem('labels'));
+}
+
 function createModal(children = '') {
   const modal = document.body.appendChild(document.createElement('div'));
   modal.classList.add('modal');
@@ -17,7 +32,7 @@ function createModal(children = '') {
   `;
 
   if(document.querySelectorAll('.modal').length > 1) {
-    document.querySelectorAll('.modal').forEach(m => m.remove());
+    modal.remove();
     document.title = defaultTitle;
   }
 
@@ -49,9 +64,11 @@ function cardModalReRender(
   columnName,
   cardNameChange,
   cardDescriptionChange,
-  cardCommentsChange
+  cardCommentsChange,
+  cardLabelsChange,
+  cardActiveLabelsChange
 ) {
-  const {value: cardName, description, comments} = card;
+  const {value: cardName, description, comments, activeLabels, cardLabels} = card;
 
   const modalContent = document.querySelector('.modal__content');
   modalContent.innerHTML = `
@@ -127,6 +144,7 @@ function cardModalReRender(
 
   document.title = `${cardName} на доске ${boardName} | Trello`;
 
+  const detailsCardInfo = document.querySelector('.modal__card_info_details');
   const detailsCardName = document.querySelector('.modal__card_info_details_card_name');
   const detailsCardNameForm = document.querySelector('.modal__card_info_deatils_card_name_form');
   const detailsCardNameFormInput = detailsCardNameForm.firstElementChild;
@@ -151,6 +169,29 @@ function cardModalReRender(
     }
   });
 
+  if(activeLabels.length) {
+    const detailsActiveLabels = detailsCardInfo.appendChild(document.createElement('div'));
+    detailsActiveLabels.classList.add('modal__card_info_details_labels');
+
+    const detailsActiveLabelHeading = detailsActiveLabels.appendChild(document.createElement('h6'));
+    detailsActiveLabelHeading.classList.add('modal__card_info_details_labels_heading');
+    detailsActiveLabelHeading.innerHTML = 'МЕТКИ';
+
+    const deatilsActiveLabelsContainer = detailsActiveLabels.appendChild(document.createElement('div'));
+    deatilsActiveLabelsContainer.classList.add('modal__card_info_details_labels_container');
+
+    activeLabels.map(label => {
+      const detailsActiveLabel = deatilsActiveLabelsContainer.appendChild(document.createElement('div'))
+      detailsActiveLabel.classList.add('modal__card_info_details_labels_label');
+      detailsActiveLabel.style.backgroundColor = label.color;
+
+      if(label.value) {
+        const detailsActiveLabelValue = detailsActiveLabel.appendChild(document.createElement('p'));
+        detailsActiveLabelValue.classList.add('modal__card_info_details_labels_label_value');
+        detailsActiveLabelValue.innerHTML = label.value;
+      }
+    });
+  }
 
   const descriptionSection = document.querySelector('.modal__card_info_details_description_section');
 
@@ -421,6 +462,107 @@ function cardModalReRender(
     }
   });
 
+  // upgardes
+
+  const upgradesSection = document.querySelector('.modal__card_upgrades_menu');
+  const upgradeButtons = document.querySelectorAll('.modal__card_upgrade_button');
+
+  upgradeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.popover').forEach(p => p.remove());
+      const popoverBody = document.createElement('div');
+      popoverBody.classList.add('popover__body');
+
+      if(btn.lastElementChild.textContent === 'Метки') {
+        const popoverLabelHeading = popoverBody.appendChild(document.createElement('h4'));
+        popoverLabelHeading.classList.add('popover__label_heading');
+        popoverLabelHeading.innerHTML = btn.lastElementChild.textContent;
+
+        const popoverLabels = popoverBody.appendChild(document.createElement('ul'));
+        popoverLabels.classList.add('popover__label_labels');
+
+        cardLabels.map(label => {
+          const popoverLabel = popoverLabels.appendChild(document.createElement('li'));
+          popoverLabel.classList.add('popover__labels_label');
+
+          const popoverLabelColor = popoverLabel.appendChild(document.createElement('div'));
+          popoverLabelColor.classList.add('popover__labels_label_color');
+          popoverLabelColor.style.backgroundColor = label.color;
+          if(label.value) {
+            const popoverLabelValue = popoverLabelColor.appendChild(document.createElement('p'));
+            popoverLabelValue.classList.add('popover__labels_label_value');
+            popoverLabelValue.innerHTML = label.value;
+          }
+
+          if(label.active) {
+            const popoverLabelActive = popoverLabelColor.appendChild(document.createElement('span'))
+            popoverLabelActive.classList.add('popover__labels_label_active');
+            popoverLabelActive.innerHTML = '<i class="fas fa-check"></i>';
+          }
+
+          const popoverLabelEdit = popoverLabel.appendChild(document.createElement('span'));
+          popoverLabelEdit.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+
+          popoverLabelColor.addEventListener('mouseenter', function() {
+            this.style.boxShadow = `-8px 0 ${`${label.color}bb`}`;
+          });
+
+          popoverLabelColor.addEventListener('mouseleave', function() {
+            this.style.boxShadow = '';
+          });
+
+          popoverLabelColor.addEventListener('click', () => {
+            if(!label.active) {
+              cardLabelsChange(
+                card,
+                cardLabels.map(l => {
+                  if(l.id === label.id && !l.active) {
+                    return {
+                      ...l,
+                      active: true
+                    }
+                  }
+  
+                  return l;
+                })
+              );
+              cardActiveLabelsChange(
+                card,
+                [...activeLabels, {...label}]
+              );
+            } else {
+              cardLabelsChange(
+                card,
+                cardLabels.map(l => {
+                  if(l.id === label.id && l.active) {
+                    return {
+                      ...l,
+                      active: false
+                    }
+                  }
+  
+                  return l;
+                })
+              );
+              cardActiveLabelsChange(
+                card,
+                activeLabels.filter(l => l.id !== label.id)
+              );
+            }
+          });
+        });
+
+        const popoverLabelCreate = popoverBody.appendChild(document.createElement('button'));
+        popoverLabelCreate.classList.add('popover__label_create_button');
+        popoverLabelCreate.innerHTML = 'Создать новую метку';
+      } else {
+        return;
+      }
+
+      createPopover(upgradesSection, btn.lastElementChild.textContent, popoverBody);
+    });
+  });
+
   modalContent.addEventListener('click', (e) => {
     if(e.target !== commentContainer &&
        e.target !== commentTextarea &&
@@ -465,7 +607,9 @@ function cardModal({
   columnName,
   cardNameChange,
   cardDescriptionChange,
-  cardCommentsChange
+  cardCommentsChange,
+  cardLabelsChange,
+  cardActiveLabelsChange
 }) {
   const modal = createModal();
   cardModalReRender(
@@ -473,7 +617,9 @@ function cardModal({
     columnName,
     cardNameChange,
     cardDescriptionChange,
-    cardCommentsChange
+    cardCommentsChange,
+    cardLabelsChange,
+    cardActiveLabelsChange
   );
   return modal;
 }

@@ -212,7 +212,9 @@ class Column {
           id: randomId(),
           value: name,
           description: '',
-          comments: []
+          comments: [],
+          cardLabels: labels,
+          activeLabels: []
         });
         this.cardsArray = col.cardsArray;
         localStorage.setItem('columns', JSON.stringify(columns));
@@ -267,13 +269,40 @@ class Column {
   }
 
   createCard = (card) => {
-    const {value: name, id, description, comments} = card;
+    const {value: name, id, description, comments, activeLabels} = card;
 
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
     this.card.classList.add(`${this.id}__column_card`);
     this.card.draggable = true;
     this.card.id = id;
+
+    if(activeLabels.length) {
+      this.cardLabels = this.card.appendChild(document.createElement('div'));
+      this.cardLabels.classList.add('column__card_labels');
+
+      activeLabels.map(label => {
+        this.cardLabel = this.cardLabels.appendChild(document.createElement('div'));
+        this.cardLabel.classList.add('column__card_label');
+        this.cardLabel.classList.add(`${id}_column__card_label`);
+        this.cardLabel.style.backgroundColor = label.color;
+
+        if(label.value) {
+          this.cardLabel.title = label.value;
+        }
+
+        this.cardLabel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll(`.${id}_column__card_label`).forEach(label => {
+            if(!label.classList.contains('active')) {
+              label.classList.add('active');
+            } else {
+              label.classList.remove('active');
+            }
+          });
+        });
+      });
+    }
 
     this.cardName = this.card.appendChild(document.createElement('span'));
     this.cardName.classList.add('column__card_name');
@@ -307,7 +336,9 @@ class Column {
         this.listName,
         this.cardNameChange,
         this.cardDescriptionChange,
-        this.cardCommentsChange
+        this.cardCommentsChange,
+        this.cardLabelsChange,
+        this.cardActiveLabelsChange
       );
       this.cardsReRender();
     }
@@ -315,6 +346,8 @@ class Column {
     this.cardCommentsChange = (card, newComments) => this.cardPropChange(card, 'comments', newComments);
     this.cardDescriptionChange = (card, newDescription) => this.cardPropChange(card, 'description', newDescription);
     this.cardNameChange = (card, newName) => this.cardPropChange(card, 'value', newName);
+    this.cardLabelsChange = (card, newCardLabels) => this.cardPropChange(card, 'cardLabels', newCardLabels);
+    this.cardActiveLabelsChange = (card, newActiveLabels) => this.cardPropChange(card, 'activeLabels', newActiveLabels);
 
     this.card.addEventListener('click', () => {
       if (this.columnNameInput.value.trim()) {
@@ -332,7 +365,9 @@ class Column {
         columnName: this.listName,
         cardNameChange: (card, newName) => this.cardNameChange(card, newName),
         cardDescriptionChange: (card, newDescription) => this.cardDescriptionChange(card, newDescription),
-        cardCommentsChange: (card, newComments) => this.cardCommentsChange(card, newComments)
+        cardCommentsChange: (card, newComments) => this.cardCommentsChange(card, newComments),
+        cardLabelsChange: (card, newCardLabels) => this.cardLabelsChange(card, newCardLabels),
+        cardActiveLabelsChange: (card, newActiveLabels) => this.cardActiveLabelsChange(card, newActiveLabels)
       }).modalOpen();
     });
   }

@@ -533,6 +533,28 @@ button:hover, a:hover {
 .column__card_badge:not(:nth-child(1)) {
   margin-left: 15px;
 }
+.column__card_labels {
+  margin-bottom: 5px;
+  width: 95%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.column__card_label {
+  min-width: 40px;
+  height: 9px;
+  border-radius: 5px;
+  margin: 0 4px 4px 0;
+  transition: min-width .1s ease-in-out, height .3s ease-in-out;
+}
+.column__card_labels:hover .column__card_label {
+  opacity: 0.8;
+}
+.column__card_label.active {
+  min-width: 56px;
+  height: 16px;
+}
 
 /*
 *** menu
@@ -621,6 +643,8 @@ button:hover, a:hover {
 */
 
 .popover {
+  position: absolute;
+  top: 0;
   overflow: auto;
   background-color: white;
   box-shadow: 0 12px 24px -6px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08);
@@ -636,7 +660,99 @@ button:hover, a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-bottom: 20px;
   flex-direction: column;
+}
+.popover__body {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+/*
+*** popover labels
+*/
+
+.popover__label_heading {
+  color: #5e6c84;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 16px;
+}
+.popover__label_labels {
+  margin-top: 5px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+}
+.popover__labels_label {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  margin-top: 7px;
+}
+.popover__labels_label_color {
+  position: relative;
+  width: 87%;
+  height: 32px;
+  border-radius: 3px;
+  transition: box-shadow .1s ease-in-out;
+}
+.popover__labels_label_color:hover {
+  cursor: pointer;
+}
+.popover__labels_label_active {
+  position: absolute;
+  right: 5%;
+  top: 30%;
+  color: white;
+  font-size: 10px;
+}
+.popover__labels_label > span {
+  width: 11%;
+  border-radius: 3px;
+  color: #42526e;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popover__labels_label > span:hover {
+  cursor: pointer;
+  background-color: rgba(9,30,66,.08);
+}
+.popover__labels_label span:active {
+  background-color: rgba(9,30,66,.13);
+}
+.popover__label_create_button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background-color: rgba(9,30,66,.04);
+  color: #172b4d;
+  margin-top: 15px;
+}
+.popover__label_create_button:hover {
+  background-color: rgba(9,30,66,.08);
+}
+.popover__label_create_button:active {
+  color: #0079bf;
+  background-color: #e4f0f6;
+}
+.popover__labels_label_value {
+  position: absolute;
+  left: 5%;
+  top: 30%;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
 }
 
 /*
