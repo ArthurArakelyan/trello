@@ -27,6 +27,16 @@ function move(array, oldIndex, newIndex) {
   return array;
 }
 
+function allCardsLabelsChange(id) {
+  const newColumns = columns.map(columns => {
+    columns.cardsArray.map(card => {
+      card.activeLabels = card.activeLabels.filter(l => l.id !== id);
+      card.cardLabels = card.cardLabels.filter(l => l.id !== id);
+    });
+  });
+  localStorage.setItem('columns', JSON.stringify(newColumns));
+}
+
 class Column {
   constructor(listName, id = randomId(), cardsArray = []) {
     this.id = id;
@@ -269,7 +279,24 @@ class Column {
   }
 
   createCard = (card) => {
-    const {value: name, id, description, comments, activeLabels} = card;
+    const {value: name, id, description, comments, activeLabels, cardLabels} = card;
+    this.cardPropertyChange(id, 'cardLabels', cardLabels.map(l => {
+      const label = labels.find(label => label.id === l.id);
+      
+      return {
+        ...l,
+        value: label.value,
+        color: label.color
+      }
+    }));
+    this.cardPropertyChange(id, 'activeLabels', activeLabels.map(l => {
+      const label = cardLabels.find(label => label.id === l.id);
+      return {
+        ...l,
+        value: label.value,
+        color: label.color
+      }
+    }));
 
     this.card = this.cards.appendChild(document.createElement('button'));
     this.card.classList.add('column__card');
@@ -291,15 +318,9 @@ class Column {
           this.cardLabel.title = label.value;
         }
 
-        this.cardLabel.addEventListener('click', (e) => {
+        this.cardLabel.addEventListener('click', function(e) {
           e.stopPropagation();
-          document.querySelectorAll(`.${id}_column__card_label`).forEach(label => {
-            if(!label.classList.contains('active')) {
-              label.classList.add('active');
-            } else {
-              label.classList.remove('active');
-            }
-          });
+          this.parentElement.classList.toggle('active');
         });
       });
     }

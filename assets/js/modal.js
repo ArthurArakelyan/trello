@@ -7,6 +7,20 @@ let labels = [
   {id: randomId(), value: '', color: '#0079bf'}
 ];
 
+const labelColors = [
+  '#61bd4f',
+  '#f2d600',
+  '#ff9f1a',
+  '#eb5a46',
+  '#c377e0',
+  '#0079bf',
+  '#00c2e0',
+  '#51e898',
+  '#ff78cb',
+  '#344563',
+  '#b3bac5'
+];
+
 if(!localStorage.getItem('labels')) {
   localStorage.setItem('labels', JSON.stringify(labels));
 } else {
@@ -502,6 +516,7 @@ function cardModalReRender(
 
           const popoverLabelEdit = popoverLabel.appendChild(document.createElement('span'));
           popoverLabelEdit.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+          popoverLabelEdit.id = label.id;
 
           popoverLabelColor.addEventListener('mouseenter', function() {
             this.style.boxShadow = `-8px 0 ${`${label.color}bb`}`;
@@ -549,6 +564,118 @@ function cardModalReRender(
                 activeLabels.filter(l => l.id !== label.id)
               );
             }
+            reRender();
+          });
+
+          popoverLabelEdit.addEventListener('click', function() {
+            popoverBody.innerHTML = '';
+
+            const edittingLabel = labels.find(l => l.id === this.id);
+
+            const popoverEditBody = document.createElement('div');
+            popoverEditBody.classList.add('popover__body');
+
+            const popoverLabelNameEditSection = popoverEditBody.appendChild(document.createElement('div'));
+            popoverLabelNameEditSection.classList.add('popover__label_editting_name_section');
+
+            const popoverLabelNameEditHeading = popoverLabelNameEditSection.appendChild(document.createElement('h3'));
+            popoverLabelNameEditHeading.classList.add('popover__label_editting_name_heading');
+            popoverLabelNameEditHeading.classList.add('popover__label_editting_heading');
+            popoverLabelNameEditHeading.innerHTML = 'Название';
+
+            const popoverLabelNameEditInput = popoverLabelNameEditSection.appendChild(document.createElement('input'));
+            popoverLabelNameEditInput.classList.add('popover__label_editting_name_input');
+            popoverLabelNameEditInput.value = edittingLabel.value;
+
+            const popoverLabelColorEditSection = popoverEditBody.appendChild(document.createElement('div'));
+            popoverLabelColorEditSection.classList.add('popover__label_editting_color_section');
+
+            const popoverLabelColorEditHeading = popoverLabelColorEditSection.appendChild(document.createElement('h4'));
+            popoverLabelColorEditHeading.classList.add('popover__label_editting_color_heading');
+            popoverLabelColorEditHeading.classList.add('popover__label_editting_heading');
+            popoverLabelColorEditHeading.innerHTML = 'Цвета';
+
+            const popoverLabelColorsEdit = popoverLabelColorEditSection.appendChild(document.createElement('div'));
+            popoverLabelColorsEdit.classList.add('popover__label_editting_colors');
+
+            labelColors.map(label => {
+              const popoverLabelColorEdit = popoverLabelColorsEdit.appendChild(document.createElement('div'));
+              popoverLabelColorEdit.classList.add('popover__label_editting_color');
+              popoverLabelColorEdit.style.backgroundColor = label;
+              popoverLabelColorEdit.dataset.active = edittingLabel.color === label ? true : false;
+              popoverLabelColorEdit.dataset.color = label;
+
+              const popoverLabelEditColorActive = document.createElement('span');
+              popoverLabelEditColorActive.classList.add('popover__label_editting_color_active');
+              popoverLabelEditColorActive.innerHTML = '<i class="fas fa-check"></i>';
+
+              if(popoverLabelColorEdit.dataset.active === 'true') {
+                popoverLabelColorEdit.appendChild(popoverLabelEditColorActive);
+                popoverLabelColorEdit.dataset.active = true;
+              }
+
+              popoverLabelColorEdit.addEventListener('click', function() {
+                edittingLabel.color = this.dataset.color;
+                document.querySelectorAll('.popover__label_editting_color').forEach(color => {
+                  color.dataset.active = false;
+                  if(color.lastElementChild) {
+                    color.lastElementChild.remove();
+                  }
+                });
+                this.dataset.active = true;
+                this.appendChild(popoverLabelEditColorActive);
+              });
+            });
+
+            const popoverLabelEditButtons = popoverEditBody.appendChild(document.createElement('div'));
+            popoverLabelEditButtons.classList.add('popover__label_editting_buttons');
+
+            const popoverLabelEditSaveButton = popoverLabelEditButtons.appendChild(document.createElement('button'));
+            popoverLabelEditSaveButton.classList.add('popover__label_editting_buttons_button');
+            popoverLabelEditSaveButton.classList.add('popover__label_editting_buttons_save');
+            popoverLabelEditSaveButton.innerHTML = 'Сохранить';
+
+            const popoverLabelEditRemoveButton = popoverLabelEditButtons.appendChild(document.createElement('button'));
+            popoverLabelEditRemoveButton.classList.add('popover__label_editting_buttons_button');
+            popoverLabelEditRemoveButton.classList.add('popover__label_editting_buttons_delete');
+            popoverLabelEditRemoveButton.innerHTML = 'Удалить';
+
+            popoverLabelEditSaveButton.addEventListener('click', () => {
+              edittingLabel.value = popoverLabelNameEditInput.value;
+
+              labels = labels.map(l => l.id === this.id ? edittingLabel : l);
+              localStorage.setItem('labels', JSON.stringify(labels));
+
+              cardLabelsChange(card, cardLabels.map(l => {
+                const label = labels.find(label => label.id === l.id);
+                return {
+                  ...l,
+                  value: label.value,
+                  color: label.color
+                }
+              }));
+              cardActiveLabelsChange(card, activeLabels.map(l => {
+                const label = labels.find(label => label.id === l.id);
+                return {
+                  ...l,
+                  value: label.value,
+                  color: label.color
+                }
+              }));
+              reRender();
+            });
+
+            popoverLabelEditRemoveButton.addEventListener('click', () => {
+              labels = labels.filter(l => l.id !== this.id);
+              localStorage.setItem('labels', JSON.stringify(labels));
+
+              allCardsLabelsChange(this.id);
+              cardLabelsChange(card, cardLabels.filter(l => l.id !== this.id));
+              cardActiveLabelsChange(card, activeLabels.filter(l => l.id !== this.id));
+              reRender();
+            });
+
+            popoverReRender('Изменение метки', popoverEditBody);
           });
         });
 
@@ -559,7 +686,8 @@ function cardModalReRender(
         return;
       }
 
-      createPopover(upgradesSection, btn.lastElementChild.textContent, popoverBody);
+      createPopover(upgradesSection);
+      popoverReRender(btn.lastElementChild.textContent, popoverBody);
     });
   });
 

@@ -1,4 +1,4 @@
-function createPopover(section, heading = 'Pop-over', child) {
+function createPopover(section) {
   const popover = section.appendChild(document.createElement('div'));
   popover.classList.add('popover');
 
@@ -8,25 +8,6 @@ function createPopover(section, heading = 'Pop-over', child) {
   const popoverContent = popoverWrapper.appendChild(document.createElement('div'));
   popoverContent.classList.add('popover__content');
 
-  const popoverHeader = popoverContent.appendChild(document.createElement('div'));
-  popoverHeader.classList.add('popover__header');
-  popoverHeader.classList.add('menu__header');
-
-  const popoverHeading = popoverHeader.appendChild(document.createElement('h3'));
-  popoverHeading.classList.add('popover__header_heading');
-  popoverHeading.classList.add('menu__header_heading');
-  popoverHeading.innerHTML = heading;
-
-  const popoverCloseButton = popoverHeader.appendChild(document.createElement('button'));
-  popoverCloseButton.classList.add('popover__header_close');
-  popoverCloseButton.classList.add('menu__header_close');
-  popoverCloseButton.innerHTML = '<i class="fas fa-times"></i>';
-
-  const popoverChild = popoverContent.appendChild(child);
-
-  popoverCloseButton.addEventListener('click', () => {
-    popoverClose();
-  });
 
   function popoverClose() {
     popover.remove();
@@ -34,7 +15,25 @@ function createPopover(section, heading = 'Pop-over', child) {
 
   return {
     popover,
-    popoverChild,
     popoverClose
   }
+}
+
+function popoverReRender(heading, child) {
+  const popoverContent = document.querySelector('.popover__content');
+  popoverContent.innerHTML = `
+    <div class="popoved__header menu__header">
+      <h3 class="popover__header_heading menu__header_heading">${heading}</h3>
+      <button class="popover__header_close menu__header_close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+
+  popoverContent.appendChild(child);
+
+  const popoverCloseButton = document.querySelector('.popover__header_close');
+  popoverCloseButton.addEventListener('click', () => {
+    document.querySelector('.popover').remove();
+  });
 }
