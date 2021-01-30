@@ -206,9 +206,16 @@ function cardModalReRender(
       detailsActiveLabel.style.backgroundColor = label.color;
 
       if(label.value) {
+        detailsActiveLabel.title = label.value;
+
+        const maxValue = 42;
         const detailsActiveLabelValue = detailsActiveLabel.appendChild(document.createElement('p'));
         detailsActiveLabelValue.classList.add('modal__card_info_details_labels_label_value');
-        detailsActiveLabelValue.innerHTML = label.value;
+        if(label.value.length < maxValue) {
+          detailsActiveLabelValue.innerHTML = label.value;
+        } else {
+          detailsActiveLabelValue.innerHTML = `${label.value.slice(0, maxValue)}...`;
+        }
       }
     });
   }
@@ -265,7 +272,9 @@ function cardModalReRender(
   descriptionAddSave.addEventListener('click', () => {
     descriptionAddSection.classList.add('hide');
     descriptionButton.classList.remove('hide');
-    cardDescriptionChange(card, descriptionAddTextarea.value);
+    if(descriptionAddTextarea.value.trim() !== description) {
+      cardDescriptionChange(card, descriptionAddTextarea.value);
+    }
   });
 
   descriptionAddClose.addEventListener('click', () => {
@@ -509,9 +518,14 @@ function cardModalReRender(
           popoverLabelColor.classList.add('popover__labels_label_color');
           popoverLabelColor.style.backgroundColor = label.color;
           if(label.value) {
+            const maxValue = 15;
             const popoverLabelValue = popoverLabelColor.appendChild(document.createElement('p'));
             popoverLabelValue.classList.add('popover__labels_label_value');
-            popoverLabelValue.innerHTML = label.value;
+            if(label.value.length < maxValue) {
+              popoverLabelValue.innerHTML = label.value;
+            } else {
+              popoverLabelValue.innerHTML = `${label.value.slice(0, maxValue)}...`;
+            }
           }
 
           if(label.active) {
@@ -650,6 +664,22 @@ function cardModalReRender(
               labels = labels.map(l => l.id === this.id ? edittingLabel : l);
               localStorage.setItem('labels', JSON.stringify(labels));
 
+              columns.map(col => {
+                col.cardsArray.map(card => {
+                  card.activeLabels = card.activeLabels.map(l => {
+                    if(l.id === edittingLabel.id) {
+                      return {
+                        ...l,
+                        value: edittingLabel.value,
+                        color: edittingLabel.color
+                      }
+                    }
+
+                    return l;
+                  })
+                });
+              });
+              
               cardLabelsChange(card, cardLabels.map(l => {
                 const label = labels.find(label => label.id === l.id);
                 return {

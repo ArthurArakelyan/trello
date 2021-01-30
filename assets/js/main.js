@@ -81,7 +81,7 @@ class Column {
 
     this.columnForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      if (this.columnNameInput.value.trim()) {
+      if (this.columnNameInput.value.trim() && this.columnNameInput.value.trim() !== this.listName) {
         this.nameChange();
       }
 
@@ -94,6 +94,9 @@ class Column {
 
     this.cards = this.column.appendChild(document.createElement('div'));
     this.cards.classList.add('column__cards');
+    if(!this.cardsArray.length) {
+      this.cards.style.display = 'none';
+    }
 
     this.cardsCreating = this.column.appendChild(document.createElement('div'));
     this.cardsCreating.classList.add('column__cards_creating');
@@ -160,7 +163,7 @@ class Column {
     window.addEventListener('click', (e) => {
       if(e.target !== this.columnName &&
          e.target !== this.columnNameInput) {
-        if (this.columnNameInput.value.trim()) {
+        if (this.columnNameInput.value.trim() && this.columnNameInput.value.trim() !== this.listName) {
           this.nameChange();
         }
     
@@ -202,6 +205,9 @@ class Column {
   cardsReRender = () => {
     this.removeAllCards();
     columns.filter(col => col.id === this.id ? this.cardsArray = col.cardsArray : this.cardsArray);
+    if(this.cardsArray.length) {
+      this.cards.style.display = 'flex';
+    }
     this.cardsArray.map(card => {
       return this.createCard(card);
     });
@@ -282,7 +288,6 @@ class Column {
     const {value: name, id, description, comments, activeLabels, cardLabels} = card;
     this.cardPropertyChange(id, 'cardLabels', cardLabels.map(l => {
       const label = labels.find(label => label.id === l.id);
-      
       return {
         ...l,
         value: label.value,
@@ -290,7 +295,7 @@ class Column {
       }
     }));
     this.cardPropertyChange(id, 'activeLabels', activeLabels.map(l => {
-      const label = cardLabels.find(label => label.id === l.id);
+      const label = labels.find(label => label.id === l.id);
       return {
         ...l,
         value: label.value,
