@@ -37,6 +37,12 @@ function createModal(children = '') {
     }
   });
 
+  document.addEventListener('keydown', (e) => {
+    if(e.keyCode === 27) {
+      modalClose();
+    }
+  });
+
   modal.innerHTML = `
     <div class="modal__overlay" data-close="true">
       <div class="modal__content" style="width: 750px">
@@ -568,8 +574,6 @@ function cardModalReRender(
           });
 
           popoverLabelEdit.addEventListener('click', function() {
-            popoverBody.innerHTML = '';
-
             const edittingLabel = labels.find(l => l.id === this.id);
 
             const popoverEditBody = document.createElement('div');
@@ -675,13 +679,96 @@ function cardModalReRender(
               reRender();
             });
 
-            popoverReRender('Изменение метки', popoverEditBody);
+            popoverReRender('Изменение метки', popoverEditBody, true, () => {popoverReRender('Метки', popoverBody)});
           });
         });
 
         const popoverLabelCreate = popoverBody.appendChild(document.createElement('button'));
         popoverLabelCreate.classList.add('popover__label_create_button');
         popoverLabelCreate.innerHTML = 'Создать новую метку';
+
+        popoverLabelCreate.addEventListener('click', () => {
+          const creatingLabel = {
+            id: randomId(),
+            value: '',
+            color: '#61bd4f'
+          };
+
+          const popoverCreateBody = document.createElement('div');
+          popoverCreateBody.classList.add('popover__body');
+
+          const popoverCreateInputSection = popoverCreateBody.appendChild(document.createElement('div'));
+          popoverCreateInputSection.classList.add('popover__label_editting_name_section');
+
+          const popoverCreateInputHeading = popoverCreateInputSection.appendChild(document.createElement('h3'));
+          popoverCreateInputHeading.classList.add('popover__label_editting_heading');
+          popoverCreateInputHeading.innerHTML = 'Название';
+
+          const popoverCreateInput = popoverCreateInputSection.appendChild(document.createElement('input'));
+          popoverCreateInput.classList.add('popover__label_editting_name_input');
+
+          const popoverCreateColorSection = popoverCreateBody.appendChild(document.createElement('div'));
+          popoverCreateColorSection.classList.add('popover__label_editting_color_section');
+
+          const popoverCreateColorHeading = popoverCreateColorSection.appendChild(document.createElement('h4'));
+          popoverCreateColorHeading.classList.add('popover__label_editting_heading');
+          popoverCreateColorHeading.innerHTML = 'Цвет';
+
+          const popoverCreateColors = popoverCreateColorSection.appendChild(document.createElement('div'));
+          popoverCreateColors.classList.add('popover__label_editting_colors');
+
+          labelColors.map(label => {
+            const popoverCreateColor = popoverCreateColors.appendChild(document.createElement('div'));
+            popoverCreateColor.classList.add('popover__label_editting_color');
+            popoverCreateColor.style.backgroundColor = label;
+            popoverCreateColor.dataset.active = label === creatingLabel.color ? true : false;
+            popoverCreateColor.dataset.color = label;
+
+            const popoverLabelCreateColorActive = document.createElement('span');
+            popoverLabelCreateColorActive.classList.add('popover__label_editting_color_active');
+            popoverLabelCreateColorActive.innerHTML = '<i class="fas fa-check"></i>';
+
+            if(popoverCreateColor.dataset.active === 'true') {
+              popoverCreateColor.appendChild(popoverLabelCreateColorActive);
+              popoverCreateColor.dataset.active = true;
+            }
+
+            popoverCreateColor.addEventListener('click', function() {
+              creatingLabel.color = this.dataset.color;
+              document.querySelectorAll('.popover__label_editting_color').forEach(color => {
+                color.dataset.active = false;
+                if(color.lastElementChild) {
+                  color.lastElementChild.remove();
+                }
+              });
+              this.dataset.active = true;
+              this.appendChild(popoverLabelCreateColorActive);
+            });
+          });
+
+          const popoverCreateSaveSection = popoverCreateBody.appendChild(document.createElement('div'));
+          popoverCreateSaveSection.classList.add('popover__label_editting_buttons');
+          
+          const popoverCreateSaveButton = popoverCreateSaveSection.appendChild(document.createElement('button'));
+          popoverCreateSaveButton.classList.add('popover__label_editting_buttons_button');
+          popoverCreateSaveButton.classList.add('popover__label_editting_buttons_save');
+          popoverCreateSaveButton.innerHTML = 'Cоздать';
+
+          popoverCreateSaveButton.addEventListener('click', () => {
+            creatingLabel.value = popoverCreateInput.value;
+            labels = [...labels, creatingLabel];
+            localStorage.setItem('labels', JSON.stringify(labels));
+
+            columns.map(col => {
+              col.cardsArray.map(card => {
+                card.cardLabels = [...card.cardLabels, creatingLabel];
+              });
+            });
+            cardLabelsChange(card, [...cardLabels, creatingLabel]);
+          });
+
+          popoverReRender('Создание метки', popoverCreateBody, true, () => {popoverReRender('Метки', popoverBody)});
+        });
       } else {
         return;
       }

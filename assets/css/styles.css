@@ -643,6 +643,9 @@ button:hover, a:hover {
 .menu__color:hover {
   opacity: 0.8;
 }
+.menu__color:active {
+  opacity: 0.6;
+}
 
 /*
 *** popover
@@ -676,6 +679,31 @@ button:hover, a:hover {
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
+}
+.popover__header_close {
+  opacity: 0.8;
+}
+.popover__header_close:hover {
+  opacity: 1;
+  background-color: transparent;
+  color: #172b4d !important;
+}
+.popover__header_back {
+  position: absolute;
+  font-size: 18px;
+  left: 0;
+  padding: 0;
+  background-color: transparent;
+  color: #172b4d;
+  display: none;
+  opacity: 0.8;
+}
+.popover__header_back.back {
+  display: block;
+}
+.popover__header_back:hover {
+  background-color: transparent;
+  opacity: 1;
 }
 
 /*
