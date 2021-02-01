@@ -65,7 +65,10 @@ class Column {
     this.columnNameInput.classList.add('column__header_form_input');
     this.columnNameInput.value = this.listName;
 
-    this.columnExtras = this.columnHeader.appendChild(document.createElement('button'));
+    this.columnExtrasSection = this.columnHeader.appendChild(document.createElement('div'));
+    this.columnExtrasSection.classList.add('column__header_extras_section');
+
+    this.columnExtras = this.columnExtrasSection.appendChild(document.createElement('button'));
     this.columnExtras.classList.add('column__header_extras');
     this.columnExtras.innerHTML = '<i class="fas fa-ellipsis-h"></i>';
 
@@ -209,7 +212,6 @@ class Column {
       this.cards.style.display = 'flex';
     }
     this.cardsArray.map(card => {
-      console.log(card);
       return this.createCard(card);
     });
     localStorage.setItem('columns', JSON.stringify(columns));
@@ -286,7 +288,6 @@ class Column {
   }
 
   createCard = (card) => {
-    console.log('createCard', card);
     const {value: name, id, description, comments, activeLabels, cardLabels} = card;
     this.cardPropertyChange(id, 'cardLabels', cardLabels.map(l => {
       const label = labels.find(label => label.id === l.id);
@@ -378,9 +379,6 @@ class Column {
     this.cardActiveLabelsChange = (card, newActiveLabels) => this.cardPropChange(card, 'activeLabels', newActiveLabels);
 
     this.card.addEventListener('click', () => {
-      if (this.columnNameInput.value.trim()) {
-        this.nameChange();
-      }
       this.columnForm.classList.add('hide');
       this.columnName.classList.remove('hide');
 
@@ -504,6 +502,16 @@ function dragAndDrop() {
 function reRender(arr = columns) {
   document.querySelectorAll('.column').forEach(c => c.remove());
   document.querySelector('.column__add').remove();
+  document.querySelectorAll('.modal').forEach(modal => {
+    document.title = defaultTitle;
+    modal.classList.remove('open');
+    modal.classList.add('hide');
+
+    setTimeout(() => {
+      modal.classList.remove('hide');
+      modal.remove();
+    }, 200);
+  });
 
   arr.map(col => {
     const column = new Column(col.value, col.id, col.cardsArray);

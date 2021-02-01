@@ -671,10 +671,10 @@ function cardModalReRender(
                     }
 
                     return l;
-                  })
+                  });
                 });
               });
-              
+            
               cardLabelsChange(card, cardLabels.map(l => {
                 const label = labels.find(label => label.id === l.id);
                 return {
@@ -790,7 +790,6 @@ function cardModalReRender(
               });
             });
             cardLabelsChange(card, [...cardLabels, creatingLabel]);
-            reRender();
           });
 
           popoverReRender('Создание метки', popoverCreateBody, true, () => {popoverReRender('Метки', popoverBody)});

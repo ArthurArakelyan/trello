@@ -406,12 +406,15 @@ button:hover, a:hover {
   border: 2px solid #1152c2;
   border-radius: 3px;
 }
+.column__header_extras_section {
+  position: relative;
+}
 .column__header_extras {
   padding: 8px;
   background: transparent;
   border-radius: 3px;
   color: #6b778c;
-  transition: background-color .3s ease-in-out
+  transition: background-color .3s ease-in-out;
 }
 .column__header_extras:hover {
   background-color: rgba(9,30,66,.08);
@@ -423,7 +426,6 @@ button:hover, a:hover {
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
-  /* padding: 7px 0 3px 0; */
   padding-bottom: 2px;
 }
 .column__cards_new_card {
@@ -697,13 +699,22 @@ button:hover, a:hover {
   justify-content: flex-start;
   flex-direction: column;
 }
+.popoved__header {
+  padding: 15px 0 12px 0;
+}
 .popover__header_close {
   opacity: 0.8;
+  right: 1%;
+  font-size: 16px;
 }
 .popover__header_close:hover {
   opacity: 1;
   background-color: transparent;
   color: #172b4d !important;
+}
+.popover__header_heading {
+  font-weight: 500;
+  font-size: 14px;
 }
 .popover__header_back {
   position: absolute;

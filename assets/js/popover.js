@@ -8,8 +8,11 @@ function createPopover(section) {
   const popoverContent = popoverWrapper.appendChild(document.createElement('div'));
   popoverContent.classList.add('popover__content');
 
-
   function popoverClose() {
+    popover.remove();
+  }
+
+  if(document.querySelectorAll('.popover').length > 1) {
     popover.remove();
   }
 
