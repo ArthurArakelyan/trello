@@ -209,6 +209,7 @@ class Column {
       this.cards.style.display = 'flex';
     }
     this.cardsArray.map(card => {
+      console.log(card);
       return this.createCard(card);
     });
     localStorage.setItem('columns', JSON.stringify(columns));
@@ -285,6 +286,7 @@ class Column {
   }
 
   createCard = (card) => {
+    console.log('createCard', card);
     const {value: name, id, description, comments, activeLabels, cardLabels} = card;
     this.cardPropertyChange(id, 'cardLabels', cardLabels.map(l => {
       const label = labels.find(label => label.id === l.id);
@@ -411,7 +413,7 @@ class AddColumn {
       <span>Добавьте ещё одну колонку</span>
     `;
 
-    this.addColumnSection = this.addColumn.appendChild(document.createElement('div'));
+    this.addColumnSection = this.addColumn.appendChild(document.createElement('form'));
     this.addColumnSection.classList.add('column__add_section');
     this.addColumnSection.style.display = 'none';
 
@@ -429,6 +431,7 @@ class AddColumn {
     this.addColumnClose = this.addColumnButtons.appendChild(document.createElement('button'));
     this.addColumnClose.classList.add('column__add_close');
     this.addColumnClose.innerHTML = '<i class="fas fa-times"></i>';
+    this.addColumnClose.type = 'button';
 
     this.addColumnButton.addEventListener('click', () => {
       this.addColumnButton.classList.add('hide');
@@ -440,7 +443,7 @@ class AddColumn {
       }, 10);
     });
 
-    this.addColumnButtonConfirm.addEventListener('click', () => {
+    this.addColumnSection.addEventListener('submit', () => {
       if (this.addColumnInput.value.trim()) {
         columns.push({
           value: this.addColumnInput.value,

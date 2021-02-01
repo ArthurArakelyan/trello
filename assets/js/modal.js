@@ -180,11 +180,9 @@ function cardModalReRender(
     e.preventDefault();
 
     if(detailsCardNameFormInput.value.trim()) {
-      if(detailsCardNameFormInput.value !== cardName) {
-        cardNameChange(card, detailsCardNameFormInput.value);
-      }
       detailsCardNameForm.classList.add('hide');
       detailsCardName.classList.remove('hide');
+      cardNameChange(card, detailsCardNameFormInput.value.trim());
       detailsCardNameFormInput.value = '';
     }
   });
@@ -272,9 +270,7 @@ function cardModalReRender(
   descriptionAddSave.addEventListener('click', () => {
     descriptionAddSection.classList.add('hide');
     descriptionButton.classList.remove('hide');
-    if(descriptionAddTextarea.value.trim() !== description) {
-      cardDescriptionChange(card, descriptionAddTextarea.value);
-    }
+    cardDescriptionChange(card, descriptionAddTextarea.value);
   });
 
   descriptionAddClose.addEventListener('click', () => {
@@ -420,7 +416,7 @@ function cardModalReRender(
         cardCommentsChange(
           card,
           comments.map(com => {
-            if(com.id === id && com.value !== commentEditTextarea.value) {
+            if(com.id === id && com.value !== commentEditTextarea.value.trim()) {
               com.value = commentEditTextarea.value;
               com.changed = true;
               com.changedTime = moment().format();
@@ -584,7 +580,6 @@ function cardModalReRender(
                 activeLabels.filter(l => l.id !== label.id)
               );
             }
-            reRender();
           });
 
           popoverLabelEdit.addEventListener('click', function() {
@@ -795,6 +790,7 @@ function cardModalReRender(
               });
             });
             cardLabelsChange(card, [...cardLabels, creatingLabel]);
+            reRender();
           });
 
           popoverReRender('Создание метки', popoverCreateBody, true, () => {popoverReRender('Метки', popoverBody)});
