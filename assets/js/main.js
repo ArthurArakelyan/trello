@@ -233,7 +233,11 @@ class Column {
           description: '',
           comments: [],
           cardLabels: labels,
-          activeLabels: []
+          activeLabels: [],
+          popoverIsOpen: {
+            open: false,
+            type: null
+          }
         });
         this.cardsArray = col.cardsArray;
         localStorage.setItem('columns', JSON.stringify(columns));
@@ -367,7 +371,9 @@ class Column {
         this.cardDescriptionChange,
         this.cardCommentsChange,
         this.cardLabelsChange,
-        this.cardActiveLabelsChange
+        this.cardActiveLabelsChange,
+        this.cardLabelsAndActiveLabelsChange,
+        this.popoverIsOpenChange
       );
       this.cardsReRender();
     }
@@ -377,6 +383,25 @@ class Column {
     this.cardNameChange = (card, newName) => this.cardPropChange(card, 'value', newName);
     this.cardLabelsChange = (card, newCardLabels) => this.cardPropChange(card, 'cardLabels', newCardLabels);
     this.cardActiveLabelsChange = (card, newActiveLabels) => this.cardPropChange(card, 'activeLabels', newActiveLabels);
+
+    this.cardLabelsAndActiveLabelsChange = (card, newCardLabels, newActiveLabels) => {
+      this.cardPropertyChange(card.id, 'cardLabels', newCardLabels);
+      this.cardPropertyChange(card.id, 'activeLabels', newActiveLabels);
+      cardModalReRender(
+        card,
+        this.listName,
+        this.cardNameChange,
+        this.cardDescriptionChange,
+        this.cardCommentsChange,
+        this.cardLabelsChange,
+        this.cardActiveLabelsChange,
+        this.cardLabelsAndActiveLabelsChange,
+        this.popoverIsOpenChange
+      );
+      this.cardsReRender();
+    }
+
+    this.popoverIsOpenChange = (card, newPopoverIsOpen) => this.cardPropChange(card, 'popoverIsOpen', newPopoverIsOpen);
 
     this.card.addEventListener('click', () => {
       this.columnForm.classList.add('hide');
@@ -393,7 +418,9 @@ class Column {
         cardDescriptionChange: (card, newDescription) => this.cardDescriptionChange(card, newDescription),
         cardCommentsChange: (card, newComments) => this.cardCommentsChange(card, newComments),
         cardLabelsChange: (card, newCardLabels) => this.cardLabelsChange(card, newCardLabels),
-        cardActiveLabelsChange: (card, newActiveLabels) => this.cardActiveLabelsChange(card, newActiveLabels)
+        cardActiveLabelsChange: (card, newActiveLabels) => this.cardActiveLabelsChange(card, newActiveLabels),
+        cardLabelsAndActiveLabelsChange: (card, newCardLabels, newActiveLabels) => this.cardLabelsAndActiveLabelsChange(card, newCardLabels, newActiveLabels),
+        modalPopoverIsOpen: (card, newPopoverIsOpen) => this.popoverIsOpenChange(card, newPopoverIsOpen)
       }).modalOpen();
     });
   }

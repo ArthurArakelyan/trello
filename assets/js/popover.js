@@ -49,4 +49,6 @@ function popoverReRender(heading, child, back = false, backFunction = () => {}) 
   popoverBack.addEventListener('click', () => {
     backFunction();
   });
+
+  return popoverCloseButton;
 }

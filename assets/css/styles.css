@@ -769,6 +769,9 @@ button:hover, a:hover {
 .popover__labels_label_color:hover {
   cursor: pointer;
 }
+.popover__labels_label_color:active {
+  box-shadow: none !important;
+}
 .popover__labels_label_active {
   position: absolute;
   right: 5%;
