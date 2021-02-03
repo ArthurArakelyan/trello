@@ -311,7 +311,8 @@
   height: 20px;
 }
 .modal__card_info_actions_comment_edit_container {
-  width: 92%;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
@@ -366,6 +367,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  margin-top: 13px;
 }
 .modal__card_info_actions_comment_close {
   color: #42526e;
@@ -398,6 +400,7 @@
   flex-direction: column;
   width: 92%;
   margin-top: 2px;
+  line-break: anywhere;
 }
 .modal__card_info_actions_comment_comment_creation_info {
   display: flex;
